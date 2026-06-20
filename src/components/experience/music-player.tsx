@@ -36,10 +36,15 @@ export function MusicPlayer() {
     const startTime = performance.now();
     const step = (now: number) => {
       const t = Math.min(1, (now - startTime) / duration);
-      audio.volume = start + (target - start) * t;
+      // Clamp to [0,1] to avoid IndexSizeError from tiny floating point drift.
+      const raw = start + (target - start) * t;
+      const clamped = Math.max(0, Math.min(1, raw));
+      audio.volume = clamped;
       if (t < 1) {
         fadeRef.current = requestAnimationFrame(step);
       } else {
+        // Ensure final volume is exactly the (clamped) target value.
+        audio.volume = Math.max(0, Math.min(1, target));
         fadeRef.current = null;
       }
     };

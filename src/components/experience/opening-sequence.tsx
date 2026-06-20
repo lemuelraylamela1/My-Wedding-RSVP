@@ -21,13 +21,9 @@ export function OpeningSequence() {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ onComplete: reveal });
 
-      // 0.0s — background glow swells, music has begun fading in
-      tl.fromTo(
-        ".seq-bg",
-        { opacity: 0.6 },
-        { opacity: 1, duration: 0.5, ease: "power2.out" },
-        0
-      );
+      // 0.0s — background glow swells, music has begun fading in.
+      // (The background itself stays fully opaque so the hero never peeks
+      // through; only the radiant glow animates here.)
       tl.fromTo(
         ".seq-glow",
         { scale: 0.6, opacity: 0.2 },
@@ -112,16 +108,15 @@ export function OpeningSequence() {
         4.0
       );
 
-      // 4.5s — world reveals (overlay washes to light then fades)
+      // 4.4s — world washes to warm light. The actual reveal (fading this
+      // overlay away to expose the hero) is handled by the Framer Motion
+      // `exit` animation below once `reveal()` fires on completion. We do NOT
+      // fade `root` here, because the GSAP cleanup would otherwise snap these
+      // inline styles back and cause a one-frame flicker on unmount.
       tl.to(
         ".seq-flash",
-        { opacity: 1, duration: 0.4, ease: "power2.in" },
-        4.4
-      );
-      tl.to(
-        root.current,
-        { opacity: 0, duration: 0.6, ease: "power2.out" },
-        4.6
+        { opacity: 1, duration: 0.6, ease: "power2.inOut" },
+        4.2
       );
     }, root);
 
@@ -133,8 +128,11 @@ export function OpeningSequence() {
       ref={root}
       className="fixed inset-0 z-[110] flex items-center justify-center overflow-hidden"
       initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className="seq-bg absolute inset-0 bg-linear-to-b from-soft-blush/70 via-warm-white to-romantic-pink/30" />
+      {/* fully opaque base so nothing behind shows through during the sequence */}
+      <div className="seq-bg absolute inset-0 bg-linear-to-b from-[#f7e3e8] via-[#fffdf8] to-[#f0d3da]" />
 
       {/* central radiant glow */}
       <div className="seq-glow pointer-events-none absolute left-1/2 top-1/2 h-[70vh] w-[70vh] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,243,208,0.9),rgba(232,184,199,0.3)_45%,transparent_70%)] blur-2xl" />

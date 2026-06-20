@@ -28,7 +28,9 @@ function ExperienceShell({ children }: { children: React.ReactNode }) {
         {children}
       </div>
 
-      <AnimatePresence mode="wait">
+      {/* No "wait" mode: the opaque opening sequence mounts on top of the
+          gate immediately, so the hero is never exposed between phases. */}
+      <AnimatePresence>
         {phase === "invitation" && <InvitationGate key="gate" />}
         {phase === "opening" && <OpeningSequence key="sequence" />}
       </AnimatePresence>
