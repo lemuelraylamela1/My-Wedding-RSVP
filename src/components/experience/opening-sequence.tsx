@@ -31,9 +31,9 @@ export function OpeningSequence() {
         0
       );
 
-      // 0.5s — envelope gently rises
+      // 0.5s — the whole envelope (body + flap together) rises into view
       tl.fromTo(
-        ".seq-envelope",
+        ".seq-env",
         { y: 80, opacity: 0, scale: 0.9 },
         { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power3.out" },
         0.5
@@ -64,11 +64,11 @@ export function OpeningSequence() {
         1.6
       );
 
-      // 2.0s — letter rises and unfolds
+      // 2.0s — the invitation slides up and out from inside the envelope
       tl.fromTo(
         ".seq-letter",
-        { y: 40, scaleY: 0.2, opacity: 0, transformOrigin: "bottom center" },
-        { y: -60, scaleY: 1, opacity: 1, duration: 1, ease: "power3.out" },
+        { yPercent: 0 },
+        { yPercent: -92, duration: 1.1, ease: "power3.out" },
         2.0
       );
 
@@ -150,42 +150,50 @@ export function OpeningSequence() {
         {/* light burst behind */}
         <div className="seq-burst absolute h-40 w-40 rounded-full bg-[radial-gradient(circle,rgba(255,247,230,1),rgba(255,220,150,0.5)_40%,transparent_70%)]" />
 
-        <div className="relative h-56 w-80 sm:h-64 sm:w-96">
-          {/* letter */}
-          <div className="seq-letter absolute inset-x-6 bottom-6 top-2 rounded-xl border border-champagne-gold/40 bg-warm-white px-6 py-6 text-center shadow-lg">
+        <div
+          className="seq-env relative h-60 w-80 sm:h-64 sm:w-96"
+          style={{ perspective: 900 }}
+        >
+          {/* envelope back / interior (sits behind everything) */}
+          <div className="absolute inset-0 z-0 rounded-xl bg-linear-to-b from-[#ecc6d0] to-[#e0aebb] shadow-[0_30px_60px_-30px_rgba(183,110,121,0.7)]">
+            <div className="absolute inset-x-0 top-0 h-1/2 rounded-t-xl bg-[#d79caa]/40" />
+          </div>
+
+          {/* the invitation letter — tucked INSIDE, between back and front */}
+          <div className="seq-letter absolute inset-x-[10%] top-[44%] z-20 rounded-lg border border-champagne-gold/40 bg-warm-white px-5 py-5 text-center shadow-md">
             <p className="font-sans text-[9px] uppercase tracking-[0.35em] text-deep-rose/70">
               {wedding.invitation.eyebrow}
             </p>
-            <p className="mt-3 font-display text-2xl text-ink sm:text-3xl">
+            <p className="mt-2 font-display text-2xl text-ink sm:text-3xl">
               {coupleNames("&")}
             </p>
-            <p className="mt-2 font-serif text-sm italic text-champagne-gold-deep">
+            <p className="mt-1 font-serif text-sm italic text-champagne-gold-deep">
               {wedding.event.dateShort}
             </p>
           </div>
 
-          {/* envelope body */}
-          <div className="seq-envelope absolute inset-0 rounded-xl bg-linear-to-b from-[#f7e3e8] to-[#e8b8c7] shadow-[0_30px_60px_-30px_rgba(183,110,121,0.7)]">
-            <div className="absolute inset-x-0 bottom-0 h-2/3 rounded-b-xl border-t border-warm-white/40 bg-[#f0d3da]" />
+          {/* envelope front pocket — keeps the lower part of the letter hidden inside */}
+          <div className="absolute inset-x-0 bottom-0 z-30 h-[58%] overflow-hidden rounded-b-xl border-t border-warm-white/50 bg-linear-to-b from-[#efcad3] to-[#e3aebd] shadow-[inset_0_14px_24px_-16px_rgba(91,40,52,0.45)]">
+            <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-warm-white/30" />
           </div>
 
-          {/* flap */}
+          {/* flap — hinged at the top, opens to reveal the opening */}
           <div
-            className="seq-flap absolute left-0 top-0 h-1/2 w-full origin-top"
+            className="seq-flap absolute inset-x-0 top-0 z-10 h-1/2 origin-top"
             style={{ transformStyle: "preserve-3d" }}
           >
             <div
-              className="h-full w-full bg-linear-to-b from-[#f2d8de] to-[#e8b8c7]"
-              style={{
-                clipPath: "polygon(0 0, 100% 0, 50% 100%)",
-              }}
+              className="h-full w-full bg-linear-to-b from-[#f3d2da] to-[#e8b8c7] shadow-[0_6px_10px_-6px_rgba(91,40,52,0.4)]"
+              style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%)" }}
             />
           </div>
 
-          {/* wax seal */}
-          <div className="seq-seal absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-linear-to-b from-[#e7cfa0] to-[#c9a567] font-display text-lg text-[#5b4422]">
-            {wedding.couple.groom.first[0]}
-            {wedding.couple.bride.first[0]}
+          {/* wax seal — centered on the flap, breaks away as it opens */}
+          <div className="absolute left-1/2 top-[20%] z-40 -translate-x-1/2">
+            <div className="seq-seal flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-b from-[#e7cfa0] to-[#c9a567] font-display text-lg text-[#5b4422] shadow-md">
+              {wedding.couple.groom.first[0]}
+              {wedding.couple.bride.first[0]}
+            </div>
           </div>
         </div>
       </div>
