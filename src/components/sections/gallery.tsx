@@ -8,6 +8,7 @@ import { wedding } from "@/config/wedding";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Reveal } from "@/components/ui/reveal";
 import { cn } from "@/lib/utils";
+import { MagicDust } from "@/components/effects/magic-dust";
 
 const GRADIENTS = [
   "from-[#f7e3e8] to-[#e8b8c7]",
@@ -116,6 +117,12 @@ export function Gallery() {
       className="relative overflow-hidden py-28 sm:py-36"
       style={{ backgroundColor: "var(--color-cream-dark)" }}
     >
+      <MagicDust count={18} intensity="soft" className="opacity-40" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-40"
+        style={{ background: "linear-gradient(180deg, rgba(45,27,94,0.08), transparent)" }}
+      />
       <div className="mx-auto max-w-6xl px-6">
         <SectionHeading
           eyebrow={wedding.gallery.eyebrow}
@@ -126,7 +133,7 @@ export function Gallery() {
 
         <Reveal className="mt-14">
           <div className="relative">
-            <div className="overflow-hidden rounded-3xl" ref={emblaRef}>
+            <div className="storybook-panel overflow-hidden rounded-3xl p-2" ref={emblaRef}>
               <div className="flex">
                 {items.map((it) => (
                   <div

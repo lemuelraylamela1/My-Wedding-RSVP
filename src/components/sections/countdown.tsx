@@ -6,6 +6,8 @@ import { wedding } from "@/config/wedding";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { FloatingLanterns } from "@/components/effects/floating-lanterns";
 import { StarField } from "@/components/effects/star-field";
+import { MagicDust } from "@/components/effects/magic-dust";
+import { LanternReflection } from "@/components/effects/lantern-reflection";
 
 type TimeLeft = {
   days: number;
@@ -34,10 +36,15 @@ export function Countdown() {
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
-    setMounted(true);
-    setTime(getTimeLeft(target));
+    const initial = window.setTimeout(() => {
+      setMounted(true);
+      setTime(getTimeLeft(target));
+    }, 0);
     const id = window.setInterval(() => setTime(getTimeLeft(target)), 1000);
-    return () => window.clearInterval(id);
+    return () => {
+      window.clearTimeout(initial);
+      window.clearInterval(id);
+    };
   }, [target]);
 
   const units = time
@@ -55,15 +62,16 @@ export function Countdown() {
       className="relative overflow-hidden py-28 sm:py-36"
       style={{ background: "linear-gradient(180deg, #0d0720 0%, #1e0f3a 60%, #2d1b5e 100%)" }}
     >
-      {/* star field */}
       <StarField className="absolute inset-0" count={220} parallaxFactor={0.06} />
+      <MagicDust count={28} intensity="normal" className="opacity-60" />
 
-      {/* ambient lantern glow */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="lantern-glow absolute left-1/2 top-1/2 h-[60vh] w-[60vh] -translate-x-1/2 -translate-y-1/2 opacity-50" />
+        <div className="aurora-glow absolute left-1/2 top-1/3 h-[45vh] w-[85vw] -translate-x-1/2 opacity-60" />
       </div>
 
-      <FloatingLanterns count={10} className="opacity-80" />
+      <FloatingLanterns count={14} intensity="festival" className="opacity-80" />
+      <LanternReflection className="opacity-50" />
 
       <div className="relative z-10 mx-auto max-w-4xl px-6">
         <SectionHeading
@@ -85,7 +93,6 @@ export function Countdown() {
                   className="dark-glass relative flex flex-col items-center rounded-2xl px-3 py-6"
                   style={{ boxShadow: "0 0 30px rgba(244,196,68,0.12)" }}
                 >
-                  {/* subtle lantern glow */}
                   <div
                     aria-hidden
                     className="pointer-events-none absolute inset-x-0 top-0 h-1/2 rounded-t-2xl"

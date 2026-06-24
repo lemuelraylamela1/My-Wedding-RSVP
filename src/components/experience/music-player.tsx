@@ -5,8 +5,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Volume2, VolumeX, Music } from "lucide-react";
 import { useExperience } from "./experience-provider";
 
-const TARGET_VOLUME = 0.65;
-const FADE_MS = 4000;
+const TARGET_VOLUME = 0.58;
+const FADE_MS = 5200;
 const AUDIO_SRC = "/audio/i-see-the-light.mp3";
 
 /**
@@ -106,9 +106,8 @@ export function MusicPlayer() {
             whileTap={{ scale: 0.94 }}
             aria-label={muted ? "Unmute music" : "Mute music"}
             aria-pressed={!muted}
-            className="fixed bottom-5 right-5 z-[120] flex h-12 w-12 items-center justify-center rounded-full border border-champagne-gold/50 bg-warm-white/80 text-champagne-gold-deep shadow-[0_8px_24px_-8px_rgba(201,165,103,0.6)] backdrop-blur-md transition-colors hover:bg-warm-white sm:h-14 sm:w-14"
+            className="fixed bottom-5 right-5 z-[120] flex h-12 w-12 items-center justify-center rounded-full border border-lantern/55 bg-night/75 text-lantern shadow-[0_0_34px_rgba(244,196,68,0.28)] backdrop-blur-md transition-colors hover:bg-dusk sm:h-14 sm:w-14"
           >
-            {/* gentle pulsing ring while playing */}
             {!muted && (
               <motion.span
                 aria-hidden
@@ -135,10 +134,10 @@ export function MusicPlayer() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0 }}
             transition={{ delay: 1.2, duration: 0.8 }}
-            className="fixed bottom-[4.7rem] right-5 z-[120] hidden items-center gap-1.5 rounded-full border border-champagne-gold/30 bg-warm-white/70 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-ink/60 backdrop-blur-md sm:flex"
+            className="fixed bottom-[4.7rem] right-5 z-[120] hidden items-center gap-1.5 rounded-full border border-lantern/30 bg-night/70 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-lantern-soft backdrop-blur-md sm:flex"
           >
             <Music className="h-3 w-3" />
-            Now Playing
+            Lantern Song
           </motion.div>
         )}
       </AnimatePresence>

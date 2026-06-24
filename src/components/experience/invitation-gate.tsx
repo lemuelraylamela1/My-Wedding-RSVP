@@ -14,9 +14,13 @@ import { StarField } from "@/components/effects/star-field";
 import { CastleSilhouette } from "@/components/effects/castle-silhouette";
 import { GoldButton } from "@/components/ui/gold-button";
 import { FloatingLanterns } from "@/components/effects/floating-lanterns";
+import { MagicDust } from "@/components/effects/magic-dust";
+import { LanternReflection } from "@/components/effects/lantern-reflection";
+import { useMounted } from "@/hooks/use-mounted";
 
 export function InvitationGate() {
   const { guestName, open, reducedMotion } = useExperience();
+  const mounted = useMounted();
 
   /* 3-D card tilt driven by pointer position */
   const rx = useMotionValue(0);
@@ -45,10 +49,9 @@ export function InvitationGate() {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6 }}
     >
-      {/* star field */}
       <StarField className="absolute inset-0" count={320} parallaxFactor={0} />
+      <MagicDust count={28} intensity="soft" className="opacity-70" />
 
-      {/* ambient lantern glow orbs */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="lantern-glow absolute left-1/3 top-1/4 h-[45vh] w-[45vh] -translate-x-1/2 -translate-y-1/2 opacity-60" />
         <div className="lantern-glow absolute right-1/4 top-2/3 h-[30vh] w-[30vh] opacity-40" />
@@ -61,35 +64,51 @@ export function InvitationGate() {
         />
       </div>
 
-      {/* a few gentle lanterns floating */}
-      <FloatingLanterns count={8} className="opacity-60" />
+      <FloatingLanterns count={12} className="opacity-70" />
+      <LanternReflection className="opacity-70" />
 
-      {/* distant castle */}
       <CastleSilhouette className="pointer-events-none absolute bottom-0 left-1/2 w-[140%] max-w-none -translate-x-1/2 opacity-30" />
 
       {/* invitation card */}
       <motion.div
+        key={mounted ? "entered" : "pending"}
         onMouseMove={onMove}
         onMouseLeave={onLeave}
         style={{ rotateX, rotateY, transformPerspective: 1200 }}
-        initial={{ opacity: 0, y: 40, scale: 0.92 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
+        initial={mounted ? { opacity: 0, y: 40, scale: 0.92 } : false}
+        animate={mounted ? { opacity: 1, y: 0, scale: 1 } : false}
         transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
         className="relative z-10 w-full max-w-md"
       >
         <motion.div
-          animate={reducedMotion ? undefined : { y: [0, -10, 0] }}
+          animate={mounted && !reducedMotion ? { y: [0, -10, 0] } : undefined}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
           className="relative overflow-hidden rounded-[2rem] px-7 py-12 text-center sm:px-12 sm:py-14"
           style={{
-            background: "rgba(253, 246, 236, 0.94)",
-            border: "1px solid rgba(244,196,68,0.5)",
+            background:
+              "linear-gradient(145deg, rgba(253,246,236,0.96), rgba(252,232,239,0.94) 48%, rgba(253,246,236,0.98))",
+            border: "1px solid rgba(244,196,68,0.58)",
             boxShadow:
-              "0 0 0 1px rgba(244,196,68,0.1), 0 40px 90px -30px rgba(244,196,68,0.35), 0 0 80px rgba(232,130,154,0.2)",
+              "0 0 0 1px rgba(244,196,68,0.16), 0 44px 100px -32px rgba(244,196,68,0.48), 0 0 100px rgba(232,130,154,0.24)",
           }}
         >
+          <motion.span
+            aria-hidden
+            className="pointer-events-none absolute inset-[10px] rounded-[1.55rem] border border-lantern/30"
+            animate={mounted && !reducedMotion ? { opacity: [0.35, 0.8, 0.35] } : undefined}
+            transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -left-20 top-12 h-40 w-40 rounded-full bg-lantern/20 blur-3xl"
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-14 bottom-10 h-36 w-36 rounded-full bg-rose/20 blur-3xl"
+          />
+
           {/* moving glare */}
-          {!reducedMotion && (
+          {!reducedMotion && mounted && (
             <motion.span
               aria-hidden
               className="pointer-events-none absolute inset-0 opacity-30"
@@ -102,13 +121,31 @@ export function InvitationGate() {
             />
           )}
 
-          {/* gold corner brackets */}
           <span className="pointer-events-none absolute left-5 top-5 h-9 w-9 rounded-tl-xl border-l-2 border-t-2 border-lantern/60" />
           <span className="pointer-events-none absolute right-5 top-5 h-9 w-9 rounded-tr-xl border-r-2 border-t-2 border-lantern/60" />
           <span className="pointer-events-none absolute bottom-5 left-5 h-9 w-9 rounded-bl-xl border-b-2 border-l-2 border-lantern/60" />
           <span className="pointer-events-none absolute bottom-5 right-5 h-9 w-9 rounded-br-xl border-b-2 border-r-2 border-lantern/60" />
 
           <div className="relative">
+            <motion.div
+              className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-lantern/45 bg-night/90 text-lantern shadow-[0_0_45px_rgba(244,196,68,0.36)]"
+              animate={
+                mounted && !reducedMotion
+                  ? {
+                      y: [0, -6, 0],
+                      boxShadow: [
+                        "0 0 35px rgba(244,196,68,0.28)",
+                        "0 0 62px rgba(244,196,68,0.52)",
+                        "0 0 35px rgba(244,196,68,0.28)",
+                      ],
+                    }
+                  : undefined
+              }
+              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <Sparkles className="h-6 w-6" />
+            </motion.div>
+
             <div className="mb-5 flex items-center justify-center gap-3">
               <span className="h-px w-8 bg-lantern/60" />
               <Sparkles className="h-4 w-4 text-lantern" />
@@ -141,7 +178,7 @@ export function InvitationGate() {
             </div>
 
             <p className="mt-5 font-sans text-[10px] uppercase tracking-[0.3em] text-ink/40">
-              Tap to begin · music will play
+              Tap to release the lanterns - music will play
             </p>
           </div>
         </motion.div>

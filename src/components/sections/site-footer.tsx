@@ -29,7 +29,7 @@ export function SiteFooter() {
         <p className="flex items-center justify-center gap-2 font-sans text-[11px] uppercase tracking-[0.25em] text-cream/40">
           Made with <Heart className="h-3.5 w-3.5 text-rose" />  &amp; lots of lanterns
         </p>
-        <p className="mt-2 font-sans text-xs text-cream/30">
+        <p className="mt-2 font-sans text-xs text-cream/30" suppressHydrationWarning>
           © {new Date().getFullYear()} {coupleNames(" & ")}
         </p>
       </div>

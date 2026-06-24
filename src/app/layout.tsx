@@ -37,8 +37,8 @@ const dm = DM_Sans({
   weight: ["300", "400", "500", "600"],
 });
 
-const title = `${wedding.couple.groom.first} & ${wedding.couple.bride.first} | Wedding Invitation`;
-const description = `You are cordially invited to celebrate the wedding of ${wedding.couple.groom.full} & ${wedding.couple.bride.full} on ${wedding.event.dateLong} at ${wedding.event.venue.name}.`;
+const title = `${wedding.couple.groom.first} & ${wedding.couple.bride.first} | Lantern Wedding Invitation`;
+const description = `Step into a lantern-lit wedding invitation for ${wedding.couple.groom.full} & ${wedding.couple.bride.full} on ${wedding.event.dateLong} at ${wedding.event.venue.name}.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://example.com"),
@@ -48,6 +48,8 @@ export const metadata: Metadata = {
     "wedding",
     "RSVP",
     "invitation",
+    "lantern wedding",
+    "fairytale wedding",
     wedding.couple.groom.full,
     wedding.couple.bride.full,
     wedding.event.venue.name,

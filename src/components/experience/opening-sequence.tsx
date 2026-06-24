@@ -7,6 +7,10 @@ import { wedding, coupleNames } from "@/config/wedding";
 import { useExperience } from "./experience-provider";
 import { FloatingLanterns } from "@/components/effects/floating-lanterns";
 import { ParticleField } from "@/components/effects/particle-field";
+import { CastleSilhouette } from "@/components/effects/castle-silhouette";
+import { HillSilhouette } from "@/components/effects/hill-silhouette";
+import { MagicDust } from "@/components/effects/magic-dust";
+import { LanternReflection } from "@/components/effects/lantern-reflection";
 
 export function OpeningSequence() {
   const { reveal, reducedMotion } = useExperience();
@@ -21,102 +25,87 @@ export function OpeningSequence() {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ onComplete: reveal });
 
-      // 0.0s — background glow swells, music has begun fading in.
-      // (The background itself stays fully opaque so the hero never peeks
-      // through; only the radiant glow animates here.)
+      // 0.0s - the night sky wakes up as the click-gated music starts.
       tl.fromTo(
-        ".seq-glow",
+        ".seq-moon-glow",
         { scale: 0.6, opacity: 0.2 },
-        { scale: 1, opacity: 0.8, duration: 1.6, ease: "power2.out" },
+        { scale: 1, opacity: 0.9, duration: 1.8, ease: "power2.out" },
         0
       );
 
-      // 0.5s — the whole envelope (body + flap together) rises into view
       tl.fromTo(
-        ".seq-env",
-        { y: 80, opacity: 0, scale: 0.9 },
-        { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power3.out" },
-        0.5
+        ".seq-title-card",
+        { y: 34, opacity: 0, scale: 0.96 },
+        { y: 0, opacity: 1, scale: 1, duration: 1.1, ease: "power3.out" },
+        0.35
       );
 
-      // 1.0s — gold seal glows
-      tl.fromTo(
-        ".seq-seal",
-        { boxShadow: "0 0 0px rgba(221,191,141,0)" },
-        {
-          boxShadow: "0 0 40px 10px rgba(221,191,141,0.9)",
-          scale: 1.1,
-          duration: 0.5,
-          ease: "power2.inOut",
-        },
-        1.0
-      );
-
-      // 1.5s — envelope flap opens, seal breaks away
       tl.to(
-        ".seq-flap",
-        { rotateX: 180, duration: 0.7, ease: "power2.inOut" },
-        1.5
-      );
-      tl.to(
-        ".seq-seal",
-        { scale: 0, opacity: 0, y: 30, duration: 0.5, ease: "power2.in" },
-        1.6
+        ".seq-title-card",
+        { y: -24, opacity: 0, scale: 0.94, duration: 0.8, ease: "power2.in" },
+        1.7
       );
 
-      // 2.0s — the invitation slides up and out from inside the envelope
+      // A single lantern becomes the first spark of the festival.
       tl.fromTo(
-        ".seq-letter",
-        { yPercent: 0 },
-        { yPercent: -92, duration: 1.1, ease: "power3.out" },
-        2.0
+        ".seq-hero-lantern",
+        { y: 110, opacity: 0, scale: 0.72, rotate: -7 },
+        { y: -18, opacity: 1, scale: 1, rotate: 0, duration: 1.35, ease: "back.out(1.4)" },
+        1.45
       );
 
-      // 2.5s — magical light emerges
       tl.fromTo(
-        ".seq-burst",
-        { scale: 0, opacity: 0 },
-        { scale: 2.4, opacity: 1, duration: 1.4, ease: "power2.out" },
-        2.5
+        ".seq-light-trail",
+        { scaleX: 0, opacity: 0, transformOrigin: "50% 100%" },
+        { scaleX: 1, opacity: 1, duration: 1, ease: "power2.out" },
+        1.8
       );
 
-      // 3.0s — lanterns appear
+      // The lantern festival opens around the guest.
       tl.fromTo(
         ".seq-lanterns",
         { opacity: 0 },
-        { opacity: 1, duration: 1, ease: "power1.out" },
-        3.0
+        { opacity: 1, duration: 1.1, ease: "power1.out" },
+        2.25
       );
 
-      // 3.5s — sparkles spread across the screen
+      tl.fromTo(
+        ".seq-kingdom",
+        { y: 44, opacity: 0, scale: 1.05 },
+        { y: 0, opacity: 1, scale: 1, duration: 1.35, ease: "power3.out" },
+        2.65
+      );
+
       tl.fromTo(
         ".seq-sparkles",
         { opacity: 0 },
         { opacity: 1, duration: 0.8 },
-        3.5
+        3.15
       );
 
-      // 4.0s — camera transitions forward (push-in + motion blur)
+      tl.fromTo(
+        ".seq-reflection",
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.9, ease: "power2.out" },
+        3.25
+      );
+
+      // Camera push toward the kingdom before the Framer exit reveals the hero.
       tl.to(
         ".seq-stage",
         {
-          scale: 1.6,
-          filter: "blur(6px)",
-          duration: 1,
+          scale: 1.34,
+          filter: "blur(3px)",
+          duration: 1.05,
           ease: "power2.in",
         },
-        4.0
+        4.15
       );
 
-      // 4.4s — world washes to warm light. The actual reveal (fading this
-      // overlay away to expose the hero) is handled by the Framer Motion
-      // `exit` animation below once `reveal()` fires on completion. We do NOT
-      // fade `root` here, because the GSAP cleanup would otherwise snap these
-      // inline styles back and cause a one-frame flicker on unmount.
       tl.to(
         ".seq-flash",
-        { opacity: 1, duration: 0.6, ease: "power2.inOut" },
-        4.2
+        { opacity: 1, duration: 0.65, ease: "power2.inOut" },
+        4.55
       );
     }, root);
 
@@ -131,74 +120,63 @@ export function OpeningSequence() {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
     >
-      {/* fully opaque base — deep night so hero never peeks through */}
-      <div className="seq-bg absolute inset-0" style={{ background: "linear-gradient(180deg, #0d0720 0%, #1e0f3a 60%, #2d1b5e 100%)" }} />
+      <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, #070314 0%, #0d0720 38%, #1e0f3a 70%, #39205f 100%)" }} />
+      <div className="seq-moon-glow pointer-events-none absolute left-1/2 top-[42%] h-[78vh] w-[78vh] -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl" style={{ background: "radial-gradient(circle, rgba(255,223,112,0.55), rgba(232,130,154,0.24) 42%, transparent 70%)" }} />
+      <MagicDust count={34} intensity="bright" className="opacity-80" />
 
-      {/* central radiant glow */}
-      <div className="seq-glow pointer-events-none absolute left-1/2 top-1/2 h-[70vh] w-[70vh] -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl" style={{ background: "radial-gradient(circle, rgba(244,196,68,0.7), rgba(232,130,154,0.3) 45%, transparent 70%)" }} />
-
-      {/* lanterns + sparkles layers */}
       <div className="seq-lanterns absolute inset-0 opacity-0">
-        <FloatingLanterns count={14} />
+        <FloatingLanterns count={30} intensity="festival" />
       </div>
       <div className="seq-sparkles absolute inset-0 opacity-0">
         <ParticleField density={0.0003} />
       </div>
 
-      {/* the staged envelope + letter */}
-      <div className="seq-stage relative z-10 flex items-center justify-center will-change-transform">
-        {/* light burst behind */}
-        <div className="seq-burst absolute h-40 w-40 rounded-full" style={{ background: "radial-gradient(circle, rgba(255,247,210,1), rgba(244,196,68,0.6) 40%, transparent 70%)" }} />
+      <div className="seq-stage relative z-10 h-full w-full will-change-transform">
+        <div className="seq-title-card absolute left-1/2 top-[18%] w-[min(88vw,34rem)] -translate-x-1/2 rounded-[2rem] border border-lantern/40 bg-night/45 px-6 py-7 text-center shadow-[0_0_80px_rgba(244,196,68,0.24)] backdrop-blur-md sm:px-10">
+          <p className="font-cinzel text-[10px] font-semibold uppercase tracking-[0.42em] text-rose/90">
+            {wedding.invitation.eyebrow}
+          </p>
+          <p className="mt-4 text-gold-foil font-display text-4xl font-bold sm:text-5xl">
+            {coupleNames("&")}
+          </p>
+          <p className="mt-3 font-serif text-base italic text-lantern-soft">
+            {wedding.event.dateShort}
+          </p>
+        </div>
 
-        <div
-          className="seq-env relative h-60 w-80 sm:h-64 sm:w-96"
-          style={{ perspective: 900 }}
-        >
-          {/* envelope back / interior */}
-          <div className="absolute inset-0 z-0 rounded-xl shadow-[0_30px_60px_-30px_rgba(244,196,68,0.4)]" style={{ background: "linear-gradient(180deg, #2d1b5e, #1e0f3a)" }}>
-            <div className="absolute inset-x-0 top-0 h-1/2 rounded-t-xl" style={{ background: "rgba(244,196,68,0.08)" }} />
+        <div className="seq-hero-lantern absolute left-1/2 top-[43%] z-20 -translate-x-1/2">
+          <div className="relative h-32 w-24 sm:h-40 sm:w-28">
+            <div className="absolute left-1/2 top-1/2 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full bg-lantern/35 blur-2xl" />
+            <svg viewBox="0 0 100 140" className="relative h-full w-full drop-shadow-[0_0_28px_rgba(244,196,68,0.9)]">
+              <path d="M50 8 C24 8 13 25 13 54 C13 82 22 105 35 116 L65 116 C78 105 87 82 87 54 C87 25 76 8 50 8Z" fill="url(#seqLanternBody)" stroke="#ffdf70" strokeOpacity="0.65" />
+              <path d="M50 95 C44 104 45 114 50 119 C56 114 56 104 50 95Z" fill="url(#seqLanternFlame)" />
+              <defs>
+                <radialGradient id="seqLanternBody" cx="50%" cy="78%" r="65%">
+                  <stop offset="0%" stopColor="#fffaf0" />
+                  <stop offset="48%" stopColor="#ffdf70" />
+                  <stop offset="100%" stopColor="#d98736" />
+                </radialGradient>
+                <radialGradient id="seqLanternFlame" cx="50%" cy="58%" r="58%">
+                  <stop offset="0%" stopColor="#fffaf0" />
+                  <stop offset="100%" stopColor="#ff9d3c" />
+                </radialGradient>
+              </defs>
+            </svg>
           </div>
+        </div>
 
-          {/* the invitation letter — tucked INSIDE, between back and front */}
-          <div className="seq-letter absolute inset-x-[10%] top-[44%] z-20 rounded-lg px-5 py-5 text-center shadow-md" style={{ background: "rgba(253,246,236,0.96)", border: "1px solid rgba(244,196,68,0.4)" }}>
-            <p className="font-cinzel text-[9px] uppercase tracking-[0.35em] text-rose/80">
-              {wedding.invitation.eyebrow}
-            </p>
-            <p className="mt-2 font-display text-2xl text-ink sm:text-3xl">
-              {coupleNames("&")}
-            </p>
-            <p className="mt-1 font-serif text-sm italic" style={{ color: "#b8860b" }}>
-              {wedding.event.dateShort}
-            </p>
-          </div>
+        <div className="seq-light-trail absolute left-1/2 top-[52%] h-32 w-[min(80vw,34rem)] -translate-x-1/2 rounded-full opacity-0 blur-xl" style={{ background: "radial-gradient(ellipse, rgba(255,247,200,0.75), rgba(244,196,68,0.28) 45%, transparent 72%)" }} />
 
-          {/* envelope front pocket */}
-          <div className="absolute inset-x-0 bottom-0 z-30 h-[58%] overflow-hidden rounded-b-xl shadow-[inset_0_14px_24px_-16px_rgba(244,196,68,0.2)]" style={{ background: "linear-gradient(180deg, #3d2870, #2d1b5e)", borderTop: "1px solid rgba(244,196,68,0.15)" }}>
-            <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-lantern/15" />
-          </div>
-
-          {/* flap — hinged at the top */}
-          <div
-            className="seq-flap absolute inset-x-0 top-0 z-10 h-1/2 origin-top"
-            style={{ transformStyle: "preserve-3d" }}
-          >
-            <div
-              className="h-full w-full shadow-[0_6px_10px_-6px_rgba(0,0,0,0.5)]"
-              style={{ background: "linear-gradient(180deg, #3d2870, #2d1b5e)", clipPath: "polygon(0 0, 100% 0, 50% 100%)" }}
-            />
-          </div>
-
-          {/* wax seal */}
-          <div className="absolute left-1/2 top-[20%] z-40 -translate-x-1/2">
-            <div className="seq-seal flex h-12 w-12 items-center justify-center rounded-full font-display text-lg shadow-md" style={{ background: "linear-gradient(135deg, #f4c444, #e8829a)", color: "#0d0720" }}>
-              {wedding.couple.groom.first[0]}
-              {wedding.couple.bride.first[0]}
-            </div>
-          </div>
+        <div className="seq-kingdom absolute inset-x-0 bottom-0 opacity-0">
+          <HillSilhouette className="absolute bottom-0 w-full opacity-75" />
+          <CastleSilhouette className="absolute bottom-0 left-1/2 w-[150%] max-w-none -translate-x-1/2 opacity-85 sm:w-full" />
+          <div className="absolute inset-x-0 bottom-0 h-48 bg-linear-to-t from-night via-night/45 to-transparent" />
+        </div>
+        <div className="seq-reflection absolute inset-x-0 bottom-0 opacity-0">
+          <LanternReflection />
         </div>
       </div>
 
-      {/* final flash — warm amber before reveal */}
       <div className="seq-flash pointer-events-none absolute inset-0 opacity-0" style={{ background: "linear-gradient(180deg, rgba(244,196,68,0.85) 0%, rgba(253,246,236,1) 100%)" }} />
     </motion.div>
   );

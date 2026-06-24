@@ -7,6 +7,7 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { LuxuryCard } from "@/components/ui/luxury-card";
 import { Reveal } from "@/components/ui/reveal";
 import { GoldButton } from "@/components/ui/gold-button";
+import { MagicDust } from "@/components/effects/magic-dust";
 
 const mapsEmbed = `https://www.google.com/maps?q=${encodeURIComponent(
   wedding.event.venue.mapsQuery
@@ -24,11 +25,11 @@ export function EventDetails() {
       className="relative overflow-hidden py-28 sm:py-36"
       style={{
         background:
-          "linear-gradient(180deg, #1e0f3a 0%, #fdf6ec 12%, #fdf6ec 100%)",
+          "linear-gradient(180deg, #1e0f3a 0%, #fdf6ec 14%, #fdf6ec 78%, #f5e8d8 100%)",
       }}
     >
-      {/* separator stripe */}
       <div className="absolute inset-x-0 top-0 h-1" style={{ background: "linear-gradient(90deg, transparent, #f4c444 50%, transparent)" }} />
+      <MagicDust count={18} intensity="soft" className="opacity-45" />
 
       <div className="mx-auto max-w-6xl px-6 pt-6">
         <SectionHeading
@@ -40,7 +41,7 @@ export function EventDetails() {
 
         <div className="mt-16 grid gap-6 md:grid-cols-2">
           <Reveal index={0}>
-            <LuxuryCard className="h-full" variant="light">
+            <LuxuryCard className="storybook-panel h-full" variant="light">
               <DetailIcon icon={<Heart className="h-5 w-5" />} />
               <h3 className="mt-5 font-display text-2xl font-semibold text-ink">{ceremony.label}</h3>
               <p className="mt-1 font-serif italic text-rose/80">{ceremony.detail}</p>
@@ -50,7 +51,7 @@ export function EventDetails() {
           </Reveal>
 
           <Reveal index={1}>
-            <LuxuryCard className="h-full" variant="light">
+            <LuxuryCard className="storybook-panel h-full" variant="light">
               <DetailIcon icon={<PartyPopper className="h-5 w-5" />} />
               <h3 className="mt-5 font-display text-2xl font-semibold text-ink">{reception.label}</h3>
               <p className="mt-1 font-serif italic text-rose/80">{reception.detail}</p>
@@ -60,7 +61,7 @@ export function EventDetails() {
           </Reveal>
 
           <Reveal index={0}>
-            <LuxuryCard className="h-full" variant="light">
+            <LuxuryCard className="storybook-panel h-full" variant="light">
               <DetailIcon icon={<Shirt className="h-5 w-5" />} />
               <h3 className="mt-5 font-display text-2xl font-semibold text-ink">{dressCode.title}</h3>
               <p className="mt-3 font-serif text-[1.05rem] leading-[1.85] text-ink/85">
@@ -85,7 +86,7 @@ export function EventDetails() {
           </Reveal>
 
           <Reveal index={1}>
-            <LuxuryCard className="flex h-full flex-col" variant="light">
+            <LuxuryCard className="storybook-panel flex h-full flex-col" variant="light">
               <DetailIcon icon={<MapPin className="h-5 w-5" />} />
               <h3 className="mt-5 font-display text-2xl font-semibold text-ink">{venue.name}</h3>
               <p className="mt-1 font-serif italic text-rose/80">{venue.address}</p>

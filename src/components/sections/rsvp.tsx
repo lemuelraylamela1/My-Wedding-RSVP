@@ -13,6 +13,7 @@ import { LuxuryCard } from "@/components/ui/luxury-card";
 import { GoldButton } from "@/components/ui/gold-button";
 import { SparkleBurst } from "@/components/effects/sparkle-burst";
 import { FloatingLanterns } from "@/components/effects/floating-lanterns";
+import { MagicDust } from "@/components/effects/magic-dust";
 import { cn } from "@/lib/utils";
 
 const schema = z
@@ -73,8 +74,12 @@ export function Rsvp() {
       className="relative overflow-hidden py-28 sm:py-36"
       style={{ backgroundColor: "var(--color-petal)" }}
     >
-      {/* decorative top rule */}
       <div className="absolute inset-x-0 top-0 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(232,130,154,0.5) 50%, transparent)" }} />
+      <MagicDust count={20} intensity="soft" className="opacity-45" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-10 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-lantern/10 blur-3xl"
+      />
 
       <div className="relative mx-auto max-w-2xl px-6">
         <SectionHeading
@@ -88,7 +93,7 @@ export function Rsvp() {
         </p>
 
         <div className="relative mt-12">
-          <LuxuryCard variant="light">
+          <LuxuryCard variant="light" className="storybook-panel">
             <AnimatePresence mode="wait">
               {done ? (
                 <motion.div
@@ -247,7 +252,7 @@ export function Rsvp() {
                 exit={{ opacity: 0 }}
                 className="pointer-events-none absolute inset-0 -z-0"
               >
-                <FloatingLanterns count={10} />
+                <FloatingLanterns count={12} intensity="festival" />
               </motion.div>
             )}
           </AnimatePresence>

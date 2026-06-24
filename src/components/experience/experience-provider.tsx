@@ -41,27 +41,36 @@ export function ExperienceProvider({
 
   // Guest name from ?guest= URL param.
   React.useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const g = params.get("guest");
-    if (g && g.trim()) {
-      const clean = g.trim().slice(0, 60);
-      setGuestName(`Dear ${clean}`);
-    }
+    const id = window.setTimeout(() => {
+      const params = new URLSearchParams(window.location.search);
+      const g = params.get("guest");
+      if (g && g.trim()) {
+        const clean = g.trim().slice(0, 60);
+        setGuestName(`Dear ${clean}`);
+      }
+    }, 0);
+    return () => window.clearTimeout(id);
   }, []);
 
   // Reduced-motion preference (live).
   React.useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(mq.matches);
+    const id = window.setTimeout(() => setReducedMotion(mq.matches), 0);
     const onChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
     mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
+    return () => {
+      window.clearTimeout(id);
+      mq.removeEventListener("change", onChange);
+    };
   }, []);
 
   // Restore saved mute preference.
   React.useEffect(() => {
-    const saved = window.localStorage.getItem(MUTE_KEY);
-    if (saved !== null) setMuted(saved === "true");
+    const id = window.setTimeout(() => {
+      const saved = window.localStorage.getItem(MUTE_KEY);
+      if (saved !== null) setMuted(saved === "true");
+    }, 0);
+    return () => window.clearTimeout(id);
   }, []);
 
   // Lock scroll until the site is revealed.

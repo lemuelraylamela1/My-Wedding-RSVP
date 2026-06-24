@@ -25,7 +25,7 @@ export function SectionHeading({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 28 }}
+      initial={false}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
@@ -65,7 +65,7 @@ export function SectionHeading({
         <h2
           className={cn(
             "font-display text-4xl font-semibold leading-[1.1] sm:text-5xl",
-            isDark ? "text-cream" : "text-ink"
+            isDark ? "text-gold-foil" : "text-ink"
           )}
         >
           {title}

@@ -6,6 +6,8 @@ import { StarField } from "@/components/effects/star-field";
 import { FloatingLanterns } from "@/components/effects/floating-lanterns";
 import { GoldButton } from "@/components/ui/gold-button";
 import { GoldShimmer } from "@/components/ui/gold-shimmer";
+import { MagicDust } from "@/components/effects/magic-dust";
+import { LanternReflection } from "@/components/effects/lantern-reflection";
 
 export function FinalInvitation() {
   return (
@@ -18,7 +20,9 @@ export function FinalInvitation() {
       }}
     >
       <StarField className="absolute inset-0" count={380} parallaxFactor={0.05} />
-      <FloatingLanterns count={18} />
+      <MagicDust count={38} intensity="bright" className="opacity-75" />
+      <FloatingLanterns count={28} intensity="festival" />
+      <LanternReflection className="opacity-70" />
 
       {/* central warm glow */}
       <div
@@ -27,9 +31,10 @@ export function FinalInvitation() {
         style={{
           background:
             "radial-gradient(circle, rgba(244,196,68,0.18) 0%, rgba(232,130,154,0.12) 40%, transparent 68%)",
-          filter: "blur(40px)",
+          filter: "blur(36px)",
         }}
       />
+      <div aria-hidden className="aurora-glow absolute left-1/2 top-1/3 h-[52vh] w-[90vw] -translate-x-1/2 opacity-70" />
 
       <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
         <motion.div

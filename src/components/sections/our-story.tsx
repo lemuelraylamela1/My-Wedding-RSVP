@@ -6,6 +6,7 @@ import { Heart } from "lucide-react";
 import { wedding } from "@/config/wedding";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Reveal } from "@/components/ui/reveal";
+import { MagicDust } from "@/components/effects/magic-dust";
 
 export function OurStory() {
   const lineRef = React.useRef<HTMLDivElement>(null);
@@ -21,15 +22,15 @@ export function OurStory() {
       className="relative overflow-hidden py-28 sm:py-36"
       style={{ backgroundColor: "var(--color-cream)" }}
     >
-      {/* soft decorative glow */}
       <div
         aria-hidden
-        className="pointer-events-none absolute left-0 top-0 h-40 w-full"
+        className="pointer-events-none absolute left-0 top-0 h-56 w-full"
         style={{
           background:
-            "linear-gradient(180deg, rgba(45,27,94,0.08) 0%, transparent 100%)",
+            "linear-gradient(180deg, rgba(13,7,32,0.18) 0%, rgba(244,196,68,0.08) 45%, transparent 100%)",
         }}
       />
+      <MagicDust count={20} intensity="soft" className="opacity-50" />
 
       <div className="mx-auto max-w-5xl px-6">
         <SectionHeading
@@ -40,7 +41,6 @@ export function OurStory() {
         />
 
         <div ref={lineRef} className="relative mt-20">
-          {/* animated timeline spine */}
           <div className="absolute left-4 top-0 h-full w-px bg-rose/10 md:left-1/2 md:-translate-x-1/2">
             <motion.div
               className="absolute inset-0 w-px"
@@ -58,12 +58,11 @@ export function OurStory() {
               const left = i % 2 === 0;
               return (
                 <li key={i} className="relative">
-                  {/* timeline node */}
                   <span
-                    className="absolute left-4 top-2 z-10 flex h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full md:left-1/2"
+                    className="absolute left-4 top-2 z-10 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full md:left-1/2"
                     style={{
                       background: "linear-gradient(135deg, #e8829a, #f4c444)",
-                      boxShadow: "0 0 16px rgba(232,130,154,0.5)",
+                      boxShadow: "0 0 22px rgba(244,196,68,0.5), 0 0 44px rgba(232,130,154,0.28)",
                     }}
                   >
                     <Heart className="h-3.5 w-3.5 text-night" />
@@ -77,12 +76,12 @@ export function OurStory() {
                     }`}
                   >
                     <Reveal index={0}>
-                      <div
-                        className="rounded-2xl border p-6"
+                      <motion.div
+                        whileHover={{ y: -4 }}
+                        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                        className="storybook-panel rounded-2xl p-6"
                         style={{
-                          borderColor: "rgba(232,130,154,0.2)",
-                          background: "rgba(253,246,236,0.7)",
-                          boxShadow: "0 8px 32px -16px rgba(232,130,154,0.3)",
+                          transformPerspective: 900,
                         }}
                       >
                         <p className="font-cinzel text-[10px] font-semibold uppercase tracking-[0.4em] text-rose/80">
@@ -97,7 +96,7 @@ export function OurStory() {
                         <p className="mt-3 font-serif text-[1.05rem] leading-[1.9] text-ink/80">
                           {c.description}
                         </p>
-                      </div>
+                      </motion.div>
                     </Reveal>
                   </div>
                 </li>

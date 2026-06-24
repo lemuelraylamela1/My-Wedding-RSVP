@@ -13,6 +13,11 @@ type Spark = {
 
 const COLORS = ["#ddbf8d", "#f4e3bf", "#e8b8c7", "#ffffff"];
 
+function seededUnit(index: number, salt: number) {
+  const x = Math.sin(index * 83.9 + salt * 193.1) * 43758.5453;
+  return x - Math.floor(x);
+}
+
 /** A radial burst of sparkles, used for the RSVP success moment. */
 export function SparkleBurst({
   count = 24,
@@ -24,11 +29,11 @@ export function SparkleBurst({
   const sparks = React.useMemo<Spark[]>(
     () =>
       Array.from({ length: count }, (_, i) => ({
-        angle: (i / count) * Math.PI * 2 + Math.random() * 0.3,
-        distance: Math.random() * 120 + 80,
-        size: Math.random() * 8 + 4,
-        delay: Math.random() * 0.2,
-        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        angle: (i / count) * Math.PI * 2 + seededUnit(i, 1) * 0.3,
+        distance: seededUnit(i, 2) * 120 + 80,
+        size: seededUnit(i, 3) * 8 + 4,
+        delay: seededUnit(i, 4) * 0.2,
+        color: COLORS[Math.floor(seededUnit(i, 5) * COLORS.length)],
       })),
     [count]
   );

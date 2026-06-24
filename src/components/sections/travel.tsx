@@ -5,6 +5,7 @@ import { wedding } from "@/config/wedding";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { LuxuryCard } from "@/components/ui/luxury-card";
 import { Reveal } from "@/components/ui/reveal";
+import { MagicDust } from "@/components/effects/magic-dust";
 
 export function Travel() {
   return (
@@ -13,6 +14,11 @@ export function Travel() {
       className="relative overflow-hidden py-28 sm:py-36"
       style={{ backgroundColor: "var(--color-cream-dark)" }}
     >
+      <MagicDust count={16} intensity="soft" className="opacity-35" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute right-[-10rem] top-20 h-[28rem] w-[28rem] rounded-full bg-rose/10 blur-3xl"
+      />
       <div className="mx-auto max-w-6xl px-6">
         <SectionHeading
           eyebrow={wedding.travel.eyebrow}
@@ -24,8 +30,7 @@ export function Travel() {
         <div className="mt-16 grid gap-6 md:grid-cols-3">
           {wedding.travel.hotels.map((hotel, i) => (
             <Reveal key={hotel.name} index={i}>
-              <LuxuryCard className="flex h-full flex-col" variant="light">
-                {/* top rose-gradient accent bar */}
+              <LuxuryCard className="storybook-panel flex h-full flex-col" variant="light">
                 <div
                   className="absolute inset-x-0 top-0 h-1 rounded-t-[1.75rem]"
                   style={{ background: "linear-gradient(90deg, #e8829a, #f4c444)" }}
@@ -61,7 +66,7 @@ export function Travel() {
         </div>
 
         <Reveal className="mt-8">
-          <LuxuryCard variant="light">
+          <LuxuryCard variant="light" className="storybook-panel">
             <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
               <span
                 className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-rose"

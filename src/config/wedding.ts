@@ -74,22 +74,22 @@ export const wedding = {
   },
 
   invitation: {
-    eyebrow: "You Are Cordially Invited",
+    eyebrow: "A Lantern-Lit Invitation",
     greetingDefault: "Dear Guest",
-    body: "Together with our families, we invite you to celebrate our happily ever after.",
-    cta: "Open Invitation",
+    body: "Together with our families, we invite you to step into the light and celebrate our happily ever after.",
+    cta: "Release the Lanterns",
   },
 
   hero: {
-    eyebrow: "We're Getting Married",
-    closing: "...and so the fairytale begins.",
+    eyebrow: "At Last, We See The Light",
+    closing: "Under a sky of lanterns, our next chapter begins.",
   },
 
   story: {
     eyebrow: "Our Story",
-    title: "A Love Written in the Stars",
+    title: "A Love Written In Lantern Light",
     intro:
-      "Every fairytale has a beginning. Here is ours — told in the moments that led us to forever.",
+      "Every fairytale has a beginning. Here is ours, told in the glowing moments that led us to forever.",
     // PLACEHOLDER chapters — edit freely.
     chapters: [
       {
@@ -97,7 +97,7 @@ export const wedding = {
         date: "The Beginning",
         title: "When We First Met",
         description:
-          "Two paths crossed at just the right moment, and somehow the world felt a little more magical from that day on.",
+          "Two paths crossed at just the right moment, and somehow the world felt a little brighter from that day on.",
       },
       {
         chapter: "Chapter Two",
@@ -117,7 +117,7 @@ export const wedding = {
   },
 
   countdown: {
-    eyebrow: "The Countdown Begins",
+    eyebrow: "The Lanterns Are Rising",
     title: "Until We Say I Do",
     finishedMessage: "Today we celebrate forever.",
   },
@@ -144,11 +144,11 @@ export const wedding = {
 
   rsvp: {
     eyebrow: "Will You Join Us?",
-    title: "Kindly Respond",
+    title: "Send Your Reply",
     // PLACEHOLDER deadline — update to your real RSVP cut-off.
     deadline: "December 16, 2026",
     intro:
-      "Your presence would make our fairytale complete. Please let us know if you can celebrate with us.",
+      "Your presence would make our fairytale complete. Please let us know if you can celebrate beneath the lanterns with us.",
     mealOptions: [
       "Beef",
       "Chicken",
@@ -232,7 +232,7 @@ export const wedding = {
 
   final: {
     statement:
-      "Together with our families, we invite you to celebrate the beginning of our happily ever after.",
+      "Together with our families, we invite you to celebrate the beginning of our happily ever after beneath a sky full of light.",
     signature: "With all our love,",
     cta: "RSVP Now",
   },

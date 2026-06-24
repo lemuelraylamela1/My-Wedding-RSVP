@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
+import { useMounted } from "@/hooks/use-mounted";
 
 type Lantern = {
   left: number;
@@ -13,14 +14,15 @@ type Lantern = {
   opacity: number;
 };
 
-let uid = 0;
+function seededUnit(index: number, salt: number) {
+  const x = Math.sin(index * 91.7 + salt * 271.3) * 43758.5453;
+  return x - Math.floor(x);
+}
 
 /** A single Tangled-style paper sky lantern with a warm inner glow and flame. */
-function SkyLantern({ size }: { size: number }) {
-  // Unique gradient ids so multiple lanterns don't clash.
-  const id = React.useMemo(() => `lan-${uid++}`, []);
-  const bodyId = `${id}-body`;
-  const flameId = `${id}-flame`;
+function SkyLantern({ size, idPrefix }: { size: number; idPrefix: string }) {
+  const bodyId = `${idPrefix}-body`;
+  const flameId = `${idPrefix}-flame`;
 
   return (
     <div
@@ -132,34 +134,41 @@ function SkyLantern({ size }: { size: number }) {
 export function FloatingLanterns({
   count = 12,
   className,
+  intensity = "ambient",
 }: {
   count?: number;
   className?: string;
+  intensity?: "ambient" | "festival";
 }) {
-  // Generated after mount only, so the random values never cause an
-  // SSR/client hydration mismatch (these lanterns are purely decorative).
-  const [lanterns, setLanterns] = React.useState<Lantern[]>([]);
+  const mounted = useMounted();
+  // useId produces a stable, SSR-safe unique prefix so SVG gradient IDs never
+  // clash between multiple FloatingLanterns instances on the same page and
+  // always match between server and client renders.
+  const instanceId = React.useId();
 
-  React.useEffect(() => {
-    setLanterns(
-      Array.from({ length: count }, (_, i) => ({
-        left: (i / count) * 100 + (Math.random() * 6 - 3),
-        size: Math.random() * 20 + 18,
-        delay: Math.random() * 8,
-        duration: Math.random() * 10 + 14,
-        drift: Math.random() * 40 - 20,
-        sway: Math.random() * 6 + 3,
-        opacity: Math.random() * 0.4 + 0.45,
-      }))
-    );
-  }, [count]);
+  const maxCount = intensity === "festival" ? 24 : 14;
+  const safeCount = Math.min(count, maxCount);
+  const lanterns: Lantern[] = Array.from({ length: safeCount }, (_, i) => ({
+    left: (i / Math.max(safeCount, 1)) * 100 + (seededUnit(i, 1) * 6 - 3),
+    size:
+      seededUnit(i, 2) * (intensity === "festival" ? 24 : 20) +
+      (intensity === "festival" ? 16 : 18),
+    delay: seededUnit(i, 3) * (intensity === "festival" ? 5 : 8),
+    duration: seededUnit(i, 4) * 10 + (intensity === "festival" ? 12 : 14),
+    drift:
+      seededUnit(i, 5) * (intensity === "festival" ? 56 : 40) -
+      (intensity === "festival" ? 28 : 20),
+    sway: seededUnit(i, 6) * 6 + 3,
+    opacity: seededUnit(i, 7) * 0.4 + (intensity === "festival" ? 0.5 : 0.45),
+  }));
 
   return (
     <div
       aria-hidden
       className={`pointer-events-none absolute inset-0 overflow-hidden ${className ?? ""}`}
     >
-      {lanterns.map((l, i) => (
+      {mounted &&
+        lanterns.map((l, i) => (
         <motion.div
           key={i}
           className="absolute bottom-[-12%]"
@@ -187,7 +196,7 @@ export function FloatingLanterns({
             }}
             style={{ transformOrigin: "top center" }}
           >
-            <SkyLantern size={l.size} />
+            <SkyLantern size={l.size} idPrefix={`${instanceId}-${i}`} />
           </motion.div>
         </motion.div>
       ))}
