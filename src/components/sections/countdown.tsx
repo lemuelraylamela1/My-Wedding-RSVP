@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { wedding } from "@/config/wedding";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { FloatingLanterns } from "@/components/effects/floating-lanterns";
+import { StarField } from "@/components/effects/star-field";
 
 type TimeLeft = {
   days: number;
@@ -17,8 +18,8 @@ function getTimeLeft(target: number): TimeLeft | null {
   const diff = target - Date.now();
   if (diff <= 0) return null;
   return {
-    days: Math.floor(diff / 86400000),
-    hours: Math.floor((diff / 3600000) % 24),
+    days:    Math.floor(diff / 86400000),
+    hours:   Math.floor((diff / 3600000) % 24),
     minutes: Math.floor((diff / 60000) % 60),
     seconds: Math.floor((diff / 1000) % 60),
   };
@@ -29,7 +30,7 @@ export function Countdown() {
     () => new Date(wedding.event.isoDate).getTime(),
     []
   );
-  const [time, setTime] = React.useState<TimeLeft | null>(null);
+  const [time, setTime]     = React.useState<TimeLeft | null>(null);
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -41,8 +42,8 @@ export function Countdown() {
 
   const units = time
     ? [
-        { label: "Days", value: time.days },
-        { label: "Hours", value: time.hours },
+        { label: "Days",    value: time.days    },
+        { label: "Hours",   value: time.hours   },
         { label: "Minutes", value: time.minutes },
         { label: "Seconds", value: time.seconds },
       ]
@@ -51,19 +52,29 @@ export function Countdown() {
   return (
     <section
       id="countdown"
-      className="relative overflow-hidden bg-linear-to-b from-warm-white via-soft-blush/30 to-warm-white py-24 sm:py-32"
+      className="relative overflow-hidden py-28 sm:py-36"
+      style={{ background: "linear-gradient(180deg, #0d0720 0%, #1e0f3a 60%, #2d1b5e 100%)" }}
     >
-      <FloatingLanterns count={8} className="opacity-70" />
+      {/* star field */}
+      <StarField className="absolute inset-0" count={220} parallaxFactor={0.06} />
 
-      <div className="relative mx-auto max-w-4xl px-6">
+      {/* ambient lantern glow */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div className="lantern-glow absolute left-1/2 top-1/2 h-[60vh] w-[60vh] -translate-x-1/2 -translate-y-1/2 opacity-50" />
+      </div>
+
+      <FloatingLanterns count={10} className="opacity-80" />
+
+      <div className="relative z-10 mx-auto max-w-4xl px-6">
         <SectionHeading
           eyebrow={wedding.countdown.eyebrow}
           title={wedding.countdown.title}
+          theme="dark"
         />
 
         <div className="mt-14">
           {mounted && !time ? (
-            <p className="text-center font-display text-3xl text-deep-rose">
+            <p className="text-center font-display text-3xl text-lantern">
               {wedding.countdown.finishedMessage}
             </p>
           ) : (
@@ -71,8 +82,17 @@ export function Countdown() {
               {units.map((u) => (
                 <div
                   key={u.label}
-                  className="relative flex flex-col items-center rounded-2xl border border-champagne-gold/30 bg-warm-white/70 px-3 py-6 shadow-[0_20px_50px_-30px_rgba(183,110,121,0.45)] backdrop-blur-sm"
+                  className="dark-glass relative flex flex-col items-center rounded-2xl px-3 py-6"
+                  style={{ boxShadow: "0 0 30px rgba(244,196,68,0.12)" }}
                 >
+                  {/* subtle lantern glow */}
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-x-0 top-0 h-1/2 rounded-t-2xl"
+                    style={{
+                      background: "linear-gradient(180deg, rgba(244,196,68,0.08) 0%, transparent 100%)",
+                    }}
+                  />
                   <div className="relative h-16 w-full overflow-hidden">
                     <AnimatePresence mode="popLayout" initial={false}>
                       <motion.span
@@ -81,13 +101,14 @@ export function Countdown() {
                         animate={{ y: "0%", opacity: 1 }}
                         exit={{ y: "-60%", opacity: 0 }}
                         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                        className="absolute inset-0 flex items-center justify-center font-display text-5xl font-medium tabular-nums text-ink sm:text-6xl"
+                        className="absolute inset-0 flex items-center justify-center font-cinzel text-5xl font-bold tabular-nums text-lantern sm:text-6xl"
+                        style={{ textShadow: "0 0 20px rgba(244,196,68,0.5)" }}
                       >
                         {String(u.value).padStart(2, "0")}
                       </motion.span>
                     </AnimatePresence>
                   </div>
-                  <span className="mt-2 font-sans text-[11px] uppercase tracking-[0.3em] text-deep-rose/70">
+                  <span className="mt-2 font-sans text-[11px] uppercase tracking-[0.35em] text-rose/80">
                     {u.label}
                   </span>
                 </div>
@@ -96,7 +117,7 @@ export function Countdown() {
           )}
         </div>
 
-        <p className="mt-10 text-center font-serif text-lg italic text-champagne-gold-deep">
+        <p className="mt-10 text-center font-serif text-lg italic text-lantern-soft">
           {wedding.event.dayOfWeek}, {wedding.event.dateLong}
         </p>
       </div>

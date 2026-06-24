@@ -12,15 +12,14 @@ import { cn } from "@/lib/utils";
 const GRADIENTS = [
   "from-[#f7e3e8] to-[#e8b8c7]",
   "from-[#fbeede] to-[#ddbf8d]",
-  "from-[#f3d9e0] to-[#b76e79]",
-  "from-[#fffdf8] to-[#f7e3e8]",
+  "from-[#f5c0cf] to-[#e8829a]",
+  "from-[#fdf6ec] to-[#f7e3e8]",
   "from-[#f7e3e8] to-[#ddbf8d]",
   "from-[#f0d3da] to-[#e8b8c7]",
   "from-[#fbeede] to-[#e8b8c7]",
-  "from-[#f3d9e0] to-[#ddbf8d]",
+  "from-[#fce8ef] to-[#ddbf8d]",
 ];
 
-// Varied heights create the masonry rhythm (placeholders for real photos).
 const SPANS = [
   "row-span-2",
   "row-span-1",
@@ -32,10 +31,6 @@ const SPANS = [
   "row-span-1",
 ];
 
-/**
- * Placeholder tile. When you add real photos, drop them in /public/gallery
- * and render <Image> here instead of the gradient block.
- */
 function PhotoTile({
   index,
   caption,
@@ -52,7 +47,7 @@ function PhotoTile({
       type="button"
       onClick={onOpen}
       className={cn(
-        "group relative w-full overflow-hidden rounded-2xl border border-champagne-gold/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne-gold",
+        "group relative w-full overflow-hidden rounded-2xl border border-rose/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lantern",
         className
       )}
     >
@@ -62,10 +57,10 @@ function PhotoTile({
           GRADIENTS[index % GRADIENTS.length]
         )}
       >
-        <ImageIcon className="h-8 w-8 text-warm-white/70" />
+        <ImageIcon className="h-8 w-8 text-rose/50" />
       </div>
-      <div className="absolute inset-0 bg-linear-to-t from-deep-rose/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-      <span className="absolute bottom-3 left-4 right-4 text-left font-serif text-sm italic text-warm-white opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+      <div className="absolute inset-0 bg-linear-to-t from-night/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+      <span className="absolute bottom-3 left-4 right-4 text-left font-serif text-sm italic text-cream opacity-0 transition-opacity duration-500 group-hover:opacity-100">
         {caption}
       </span>
     </button>
@@ -92,9 +87,7 @@ export function Gallery() {
     const onSelect = () => setSelected(emblaApi.selectedScrollSnap());
     emblaApi.on("select", onSelect);
     onSelect();
-    return () => {
-      emblaApi.off("select", onSelect);
-    };
+    return () => { emblaApi.off("select", onSelect); };
   }, [emblaApi]);
 
   const closeLightbox = React.useCallback(() => setLightbox(null), []);
@@ -118,15 +111,19 @@ export function Gallery() {
   }, [lightbox, closeLightbox, navLightbox]);
 
   return (
-    <section id="gallery" className="relative overflow-hidden py-24 sm:py-32">
+    <section
+      id="gallery"
+      className="relative overflow-hidden py-28 sm:py-36"
+      style={{ backgroundColor: "var(--color-cream-dark)" }}
+    >
       <div className="mx-auto max-w-6xl px-6">
         <SectionHeading
           eyebrow={wedding.gallery.eyebrow}
           title={wedding.gallery.title}
           intro={wedding.gallery.intro}
+          theme="light"
         />
 
-        {/* Embla showcase */}
         <Reveal className="mt-14">
           <div className="relative">
             <div className="overflow-hidden rounded-3xl" ref={emblaRef}>
@@ -151,7 +148,7 @@ export function Gallery() {
               type="button"
               aria-label="Previous photo"
               onClick={() => emblaApi?.scrollPrev()}
-              className="absolute left-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-champagne-gold/40 bg-warm-white/80 text-champagne-gold-deep backdrop-blur-sm transition hover:bg-warm-white"
+              className="absolute left-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-lantern/40 bg-cream/80 text-ink backdrop-blur-sm transition hover:bg-cream"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -159,7 +156,7 @@ export function Gallery() {
               type="button"
               aria-label="Next photo"
               onClick={() => emblaApi?.scrollNext()}
-              className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-champagne-gold/40 bg-warm-white/80 text-champagne-gold-deep backdrop-blur-sm transition hover:bg-warm-white"
+              className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-lantern/40 bg-cream/80 text-ink backdrop-blur-sm transition hover:bg-cream"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -173,9 +170,7 @@ export function Gallery() {
                   onClick={() => emblaApi?.scrollTo(i)}
                   className={cn(
                     "h-2 rounded-full transition-all duration-300",
-                    selected === i
-                      ? "w-6 bg-deep-rose"
-                      : "w-2 bg-champagne-gold/40"
+                    selected === i ? "w-6 bg-rose" : "w-2 bg-rose/30"
                   )}
                 />
               ))}
@@ -183,7 +178,6 @@ export function Gallery() {
           </div>
         </Reveal>
 
-        {/* Masonry grid */}
         <Reveal className="mt-12">
           <div className="grid auto-rows-[8rem] grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {items.map((it, i) => (
@@ -199,7 +193,6 @@ export function Gallery() {
         </Reveal>
       </div>
 
-      {/* Lightbox */}
       <AnimatePresence>
         {lightbox !== null && (
           <motion.div
@@ -207,24 +200,21 @@ export function Gallery() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={closeLightbox}
-            className="fixed inset-0 z-[130] flex items-center justify-center bg-ink/70 p-6 backdrop-blur-md"
+            className="fixed inset-0 z-[130] flex items-center justify-center bg-night/80 p-6 backdrop-blur-md"
           >
             <button
               type="button"
               aria-label="Close"
               onClick={closeLightbox}
-              className="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full border border-warm-white/40 text-warm-white"
+              className="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full border border-cream/30 text-cream"
             >
               <X className="h-5 w-5" />
             </button>
             <button
               type="button"
               aria-label="Previous"
-              onClick={(e) => {
-                e.stopPropagation();
-                navLightbox(-1);
-              }}
-              className="absolute left-4 flex h-12 w-12 items-center justify-center rounded-full border border-warm-white/40 text-warm-white sm:left-8"
+              onClick={(e) => { e.stopPropagation(); navLightbox(-1); }}
+              className="absolute left-4 flex h-12 w-12 items-center justify-center rounded-full border border-cream/30 text-cream sm:left-8"
             >
               <ChevronLeft className="h-6 w-6" />
             </button>
@@ -241,8 +231,8 @@ export function Gallery() {
               )}
             >
               <div className="text-center">
-                <ImageIcon className="mx-auto h-12 w-12 text-warm-white/70" />
-                <p className="mt-3 font-serif text-xl italic text-warm-white">
+                <ImageIcon className="mx-auto h-12 w-12 text-rose/60" />
+                <p className="mt-3 font-serif text-xl italic text-ink">
                   {items[lightbox].caption}
                 </p>
               </div>
@@ -250,11 +240,8 @@ export function Gallery() {
             <button
               type="button"
               aria-label="Next"
-              onClick={(e) => {
-                e.stopPropagation();
-                navLightbox(1);
-              }}
-              className="absolute right-4 flex h-12 w-12 items-center justify-center rounded-full border border-warm-white/40 text-warm-white sm:right-8"
+              onClick={(e) => { e.stopPropagation(); navLightbox(1); }}
+              className="absolute right-4 flex h-12 w-12 items-center justify-center rounded-full border border-cream/30 text-cream sm:right-8"
             >
               <ChevronRight className="h-6 w-6" />
             </button>

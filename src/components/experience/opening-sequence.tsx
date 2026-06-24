@@ -131,11 +131,11 @@ export function OpeningSequence() {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
     >
-      {/* fully opaque base so nothing behind shows through during the sequence */}
-      <div className="seq-bg absolute inset-0 bg-linear-to-b from-[#f7e3e8] via-[#fffdf8] to-[#f0d3da]" />
+      {/* fully opaque base — deep night so hero never peeks through */}
+      <div className="seq-bg absolute inset-0" style={{ background: "linear-gradient(180deg, #0d0720 0%, #1e0f3a 60%, #2d1b5e 100%)" }} />
 
       {/* central radiant glow */}
-      <div className="seq-glow pointer-events-none absolute left-1/2 top-1/2 h-[70vh] w-[70vh] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,243,208,0.9),rgba(232,184,199,0.3)_45%,transparent_70%)] blur-2xl" />
+      <div className="seq-glow pointer-events-none absolute left-1/2 top-1/2 h-[70vh] w-[70vh] -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl" style={{ background: "radial-gradient(circle, rgba(244,196,68,0.7), rgba(232,130,154,0.3) 45%, transparent 70%)" }} />
 
       {/* lanterns + sparkles layers */}
       <div className="seq-lanterns absolute inset-0 opacity-0">
@@ -148,49 +148,49 @@ export function OpeningSequence() {
       {/* the staged envelope + letter */}
       <div className="seq-stage relative z-10 flex items-center justify-center will-change-transform">
         {/* light burst behind */}
-        <div className="seq-burst absolute h-40 w-40 rounded-full bg-[radial-gradient(circle,rgba(255,247,230,1),rgba(255,220,150,0.5)_40%,transparent_70%)]" />
+        <div className="seq-burst absolute h-40 w-40 rounded-full" style={{ background: "radial-gradient(circle, rgba(255,247,210,1), rgba(244,196,68,0.6) 40%, transparent 70%)" }} />
 
         <div
           className="seq-env relative h-60 w-80 sm:h-64 sm:w-96"
           style={{ perspective: 900 }}
         >
-          {/* envelope back / interior (sits behind everything) */}
-          <div className="absolute inset-0 z-0 rounded-xl bg-linear-to-b from-[#ecc6d0] to-[#e0aebb] shadow-[0_30px_60px_-30px_rgba(183,110,121,0.7)]">
-            <div className="absolute inset-x-0 top-0 h-1/2 rounded-t-xl bg-[#d79caa]/40" />
+          {/* envelope back / interior */}
+          <div className="absolute inset-0 z-0 rounded-xl shadow-[0_30px_60px_-30px_rgba(244,196,68,0.4)]" style={{ background: "linear-gradient(180deg, #2d1b5e, #1e0f3a)" }}>
+            <div className="absolute inset-x-0 top-0 h-1/2 rounded-t-xl" style={{ background: "rgba(244,196,68,0.08)" }} />
           </div>
 
           {/* the invitation letter — tucked INSIDE, between back and front */}
-          <div className="seq-letter absolute inset-x-[10%] top-[44%] z-20 rounded-lg border border-champagne-gold/40 bg-warm-white px-5 py-5 text-center shadow-md">
-            <p className="font-sans text-[9px] uppercase tracking-[0.35em] text-deep-rose/70">
+          <div className="seq-letter absolute inset-x-[10%] top-[44%] z-20 rounded-lg px-5 py-5 text-center shadow-md" style={{ background: "rgba(253,246,236,0.96)", border: "1px solid rgba(244,196,68,0.4)" }}>
+            <p className="font-cinzel text-[9px] uppercase tracking-[0.35em] text-rose/80">
               {wedding.invitation.eyebrow}
             </p>
             <p className="mt-2 font-display text-2xl text-ink sm:text-3xl">
               {coupleNames("&")}
             </p>
-            <p className="mt-1 font-serif text-sm italic text-champagne-gold-deep">
+            <p className="mt-1 font-serif text-sm italic" style={{ color: "#b8860b" }}>
               {wedding.event.dateShort}
             </p>
           </div>
 
-          {/* envelope front pocket — keeps the lower part of the letter hidden inside */}
-          <div className="absolute inset-x-0 bottom-0 z-30 h-[58%] overflow-hidden rounded-b-xl border-t border-warm-white/50 bg-linear-to-b from-[#efcad3] to-[#e3aebd] shadow-[inset_0_14px_24px_-16px_rgba(91,40,52,0.45)]">
-            <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-warm-white/30" />
+          {/* envelope front pocket */}
+          <div className="absolute inset-x-0 bottom-0 z-30 h-[58%] overflow-hidden rounded-b-xl shadow-[inset_0_14px_24px_-16px_rgba(244,196,68,0.2)]" style={{ background: "linear-gradient(180deg, #3d2870, #2d1b5e)", borderTop: "1px solid rgba(244,196,68,0.15)" }}>
+            <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-lantern/15" />
           </div>
 
-          {/* flap — hinged at the top, opens to reveal the opening */}
+          {/* flap — hinged at the top */}
           <div
             className="seq-flap absolute inset-x-0 top-0 z-10 h-1/2 origin-top"
             style={{ transformStyle: "preserve-3d" }}
           >
             <div
-              className="h-full w-full bg-linear-to-b from-[#f3d2da] to-[#e8b8c7] shadow-[0_6px_10px_-6px_rgba(91,40,52,0.4)]"
-              style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%)" }}
+              className="h-full w-full shadow-[0_6px_10px_-6px_rgba(0,0,0,0.5)]"
+              style={{ background: "linear-gradient(180deg, #3d2870, #2d1b5e)", clipPath: "polygon(0 0, 100% 0, 50% 100%)" }}
             />
           </div>
 
-          {/* wax seal — centered on the flap, breaks away as it opens */}
+          {/* wax seal */}
           <div className="absolute left-1/2 top-[20%] z-40 -translate-x-1/2">
-            <div className="seq-seal flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-b from-[#e7cfa0] to-[#c9a567] font-display text-lg text-[#5b4422] shadow-md">
+            <div className="seq-seal flex h-12 w-12 items-center justify-center rounded-full font-display text-lg shadow-md" style={{ background: "linear-gradient(135deg, #f4c444, #e8829a)", color: "#0d0720" }}>
               {wedding.couple.groom.first[0]}
               {wedding.couple.bride.first[0]}
             </div>
@@ -198,8 +198,8 @@ export function OpeningSequence() {
         </div>
       </div>
 
-      {/* final flash to white before reveal */}
-      <div className="seq-flash pointer-events-none absolute inset-0 bg-warm-white opacity-0" />
+      {/* final flash — warm amber before reveal */}
+      <div className="seq-flash pointer-events-none absolute inset-0 opacity-0" style={{ background: "linear-gradient(180deg, rgba(244,196,68,0.85) 0%, rgba(253,246,236,1) 100%)" }} />
     </motion.div>
   );
 }

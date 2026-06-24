@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { wedding, coupleNames } from "@/config/wedding";
-import { ParticleField } from "@/components/effects/particle-field";
+import { StarField } from "@/components/effects/star-field";
 import { FloatingLanterns } from "@/components/effects/floating-lanterns";
 import { GoldButton } from "@/components/ui/gold-button";
 import { GoldShimmer } from "@/components/ui/gold-shimmer";
@@ -11,13 +11,25 @@ export function FinalInvitation() {
   return (
     <section
       id="final"
-      className="relative flex min-h-[90svh] items-center justify-center overflow-hidden bg-linear-to-b from-warm-white via-soft-blush/50 to-[#f0d3da]"
+      className="relative flex min-h-[95svh] items-center justify-center overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(180deg, #1e0f3a 0%, #0d0720 40%, #1a0830 80%, #2d1b5e 100%)",
+      }}
     >
-      <ParticleField className="absolute inset-0" density={0.00014} />
-      <FloatingLanterns count={12} />
+      <StarField className="absolute inset-0" count={380} parallaxFactor={0.05} />
+      <FloatingLanterns count={18} />
 
-      {/* glow */}
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[60vh] w-[60vh] -translate-x-1/2 -translate-y-1/2 rounded-full bg-romantic-pink/20 blur-[120px]" />
+      {/* central warm glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[70vh] w-[70vh] -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(244,196,68,0.18) 0%, rgba(232,130,154,0.12) 40%, transparent 68%)",
+          filter: "blur(40px)",
+        }}
+      />
 
       <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
         <motion.div
@@ -26,26 +38,26 @@ export function FinalInvitation() {
           viewport={{ once: true }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="mx-auto mb-8 flex items-center justify-center gap-3">
-            <span className="h-px w-12 bg-champagne-gold/60" />
-            <span className="font-sans text-xs uppercase tracking-[0.4em] text-deep-rose/80">
+          <div className="mx-auto mb-8 flex items-center justify-center gap-4">
+            <span className="h-px w-14 bg-lantern/50" />
+            <span className="font-cinzel text-[10px] font-semibold uppercase tracking-[0.45em] text-rose/80">
               {wedding.final.signature}
             </span>
-            <span className="h-px w-12 bg-champagne-gold/60" />
+            <span className="h-px w-14 bg-lantern/50" />
           </div>
 
-          <p className="font-display text-3xl font-medium leading-[1.25] text-ink sm:text-4xl lg:text-[2.75rem]">
+          <p className="font-display text-3xl font-semibold leading-[1.35] text-cream/95 sm:text-4xl lg:text-[2.75rem]">
             {wedding.final.statement}
           </p>
 
           <GoldShimmer
             as="p"
-            className="mt-10 font-display text-5xl font-medium sm:text-6xl"
+            className="mt-10 font-display text-5xl font-bold sm:text-6xl"
           >
             {coupleNames("\u2661")}
           </GoldShimmer>
 
-          <p className="mt-3 font-serif text-xl italic text-ink/70">
+          <p className="mt-3 font-serif text-xl italic text-blush/80">
             {wedding.event.dateLong}
           </p>
 
@@ -54,7 +66,7 @@ export function FinalInvitation() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.8 }}
-            className="mt-10"
+            className="mt-12"
           >
             <a href="#rsvp">
               <GoldButton size="lg">{wedding.final.cta}</GoldButton>

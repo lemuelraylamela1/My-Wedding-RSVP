@@ -1,79 +1,90 @@
 @import "tailwindcss";
 
 @theme {
-  /* Brand palette */
-  --color-warm-white: #fffdf8;
-  --color-soft-blush: #f7e3e8;
-  --color-romantic-pink: #e8b8c7;
-  --color-champagne-gold: #ddbf8d;
-  --color-champagne-gold-deep: #c9a567;
-  --color-deep-rose: #b76e79;
-  --color-ink: #4a3b3f;
+  /* ── Night-sky / Tangled palette ─────────────────────────────── */
+  --color-night:    #0d0720;   /* deepest midnight sky            */
+  --color-dusk:     #1e0f3a;   /* deep purple                     */
+  --color-twilight: #2d1b5e;   /* mid purple                      */
+  --color-corona:   #3d2870;   /* lighter purple for accents      */
 
-  /* Fonts (wired up via next/font CSS variables) */
+  --color-lantern:      #f4c444; /* warm amber lantern gold         */
+  --color-lantern-soft: #e8c880; /* softer secondary gold           */
+  --color-lantern-glow: #ffdf70; /* brightest highlight             */
+
+  --color-rose:     #e8829a;   /* wedding pink — prominent         */
+  --color-blush:    #f5c0cf;   /* soft pink                        */
+  --color-petal:    #fce8ef;   /* near-white pink tint             */
+
+  --color-cream:    #fdf6ec;   /* light section background         */
+  --color-cream-dark: #f5e8d8; /* slightly deeper cream            */
+  --color-ink:      #2a1540;   /* dark ink for cream sections      */
+  --color-ink-light: #fdf6ec;  /* "ink" on dark sections           */
+
+  /* legacy aliases kept so wedding.ts & form code compile */
+  --color-warm-white:       #fdf6ec;
+  --color-soft-blush:       #f5c0cf;
+  --color-romantic-pink:    #e8829a;
+  --color-champagne-gold:   #e8c880;
+  --color-champagne-gold-deep: #d4a840;
+  --color-deep-rose:        #c0607a;
+
+  /* ── Fonts ───────────────────────────────────────────────────── */
   --font-display: var(--font-playfair), Georgia, serif;
-  --font-serif: var(--font-cormorant), Georgia, serif;
-  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-cinzel:  var(--font-cinzel-var), "Trajan Pro", Georgia, serif;
+  --font-serif:   var(--font-lora), Georgia, serif;
+  --font-sans:    var(--font-dm), system-ui, sans-serif;
 
-  /* Easing */
+  /* ── Easing ──────────────────────────────────────────────────── */
   --ease-luxury: cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* Keyframes */
-  --animate-shimmer: shimmer 6s linear infinite;
-  --animate-float-slow: float-slow 7s ease-in-out infinite;
-  --animate-twinkle: twinkle 4s ease-in-out infinite;
-
+  /* ── Keyframe animations ─────────────────────────────────────── */
   @keyframes shimmer {
-    0% {
-      background-position: -200% center;
-    }
-    100% {
-      background-position: 200% center;
-    }
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
   }
 
   @keyframes float-slow {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
+    0%, 100% { transform: translateY(0);     }
+    50%       { transform: translateY(-10px); }
   }
 
   @keyframes twinkle {
-    0%,
-    100% {
-      opacity: 0.25;
-      transform: scale(0.85);
-    }
-    50% {
-      opacity: 1;
-      transform: scale(1);
-    }
+    0%, 100% { opacity: 0.2; transform: scale(0.8); }
+    50%       { opacity: 1;   transform: scale(1);   }
+  }
+
+  @keyframes lantern-pulse {
+    0%, 100% { opacity: 0.75; filter: blur(18px); }
+    50%       { opacity: 1;   filter: blur(24px); }
+  }
+
+  @keyframes rise {
+    from { transform: translateY(0); opacity: 0; }
+    to   { transform: translateY(-120vh); opacity: 0; }
   }
 }
 
+/* ── Base ────────────────────────────────────────────────────────── */
 :root {
-  --background: #fffdf8;
-  --foreground: #4a3b3f;
+  --background: #0d0720;
+  --foreground: #fdf6ec;
 }
 
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  font-size: 18px;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-night);
+  color: var(--color-ink-light);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Lenis smooth scroll */
+/* ── Lenis smooth scroll ─────────────────────────────────────────── */
 html.lenis,
 html.lenis body {
   height: auto;
@@ -81,28 +92,25 @@ html.lenis body {
 .lenis.lenis-smooth {
   scroll-behavior: auto !important;
 }
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
 .lenis.lenis-stopped {
   overflow: hidden;
 }
 
-/* When the invitation gate is open, lock body scroll */
+/* experience gate scroll lock */
 body.experience-locked {
   overflow: hidden;
 }
 
-/* Gold foil text */
+/* ── Gold foil shimmer text ──────────────────────────────────────── */
 .text-gold-foil {
   background: linear-gradient(
     100deg,
-    #c9a567 0%,
-    #f4e3bf 25%,
-    #ddbf8d 45%,
-    #fff7e6 55%,
-    #ddbf8d 70%,
-    #c9a567 100%
+    #d4a840 0%,
+    #ffdf70 25%,
+    #e8c880 45%,
+    #fff7c0 55%,
+    #e8c880 70%,
+    #d4a840 100%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
@@ -111,58 +119,74 @@ body.experience-locked {
   animation: shimmer 6s linear infinite;
 }
 
-/* Thin gold rule */
+/* ── Rose-gold shimmer (for pink headings) ───────────────────────── */
+.text-rose-shimmer {
+  background: linear-gradient(
+    100deg,
+    #c0607a 0%,
+    #f5c0cf 30%,
+    #e8829a 50%,
+    #fce8ef 65%,
+    #e8829a 80%,
+    #c0607a 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 7s linear infinite;
+}
+
+/* ── Thin divider lines ──────────────────────────────────────────── */
 .gold-rule {
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--color-champagne-gold) 50%,
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, #e8c880 50%, transparent);
+}
+.rose-rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e8829a 50%, transparent);
 }
 
-/* Ivory paper texture (subtle) */
-.paper-texture {
-  background-color: #fffdf8;
-  background-image: radial-gradient(
-      circle at 20% 30%,
-      rgba(221, 191, 141, 0.05) 0%,
-      transparent 40%
-    ),
-    radial-gradient(
-      circle at 80% 70%,
-      rgba(183, 110, 121, 0.04) 0%,
-      transparent 45%
-    );
+/* ── Cream section base ──────────────────────────────────────────── */
+.cream-section {
+  background-color: var(--color-cream);
+  color: var(--color-ink);
 }
 
-/* Selection */
+/* ── Dark glass card ─────────────────────────────────────────────── */
+.dark-glass {
+  background: rgba(30, 15, 58, 0.72);
+  border: 1px solid rgba(232, 200, 128, 0.22);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ── Ambient lantern glow pulse (decorative blobs) ───────────────── */
+.lantern-glow {
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244,196,68,0.45), transparent 68%);
+  animation: lantern-pulse 4s ease-in-out infinite;
+}
+
+/* ── Selection ───────────────────────────────────────────────────── */
 ::selection {
-  background: var(--color-romantic-pink);
-  color: #4a3b3f;
+  background: #e8829a;
+  color: #0d0720;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-warm-white);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-romantic-pink);
+/* ── Custom scrollbar ────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 9px; }
+::-webkit-scrollbar-track  { background: #1e0f3a; }
+::-webkit-scrollbar-thumb  {
+  background: #e8829a;
   border-radius: 9999px;
-  border: 2px solid var(--color-warm-white);
+  border: 2px solid #1e0f3a;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-deep-rose);
-}
+::-webkit-scrollbar-thumb:hover { background: #f5c0cf; }
 
+/* ── Reduced motion ──────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

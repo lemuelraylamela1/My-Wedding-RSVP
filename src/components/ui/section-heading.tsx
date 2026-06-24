@@ -9,15 +9,20 @@ export function SectionHeading({
   title,
   intro,
   align = "center",
+  theme = "light",
   className,
 }: {
   eyebrow?: string;
   title: string;
   intro?: string;
   align?: "center" | "left";
+  /** "light" = cream section, "dark" = night-sky section */
+  theme?: "light" | "dark";
   className?: string;
 }) {
   const isCenter = align === "center";
+  const isDark = theme === "dark";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 28 }}
@@ -31,27 +36,58 @@ export function SectionHeading({
       )}
     >
       {eyebrow && (
-        <span className="font-sans text-xs font-medium uppercase tracking-[0.35em] text-deep-rose/80">
+        <span
+          className={cn(
+            "font-cinzel text-[10px] font-semibold uppercase tracking-[0.4em]",
+            isDark ? "text-rose/90" : "text-rose/80"
+          )}
+        >
           {eyebrow}
         </span>
       )}
+
       <div
         className={cn(
-          "flex items-center gap-3",
+          "flex items-center gap-4",
           isCenter ? "justify-center" : "justify-start"
         )}
       >
-        {isCenter && <span className="h-px w-10 bg-champagne-gold/60" />}
-        <h2 className="font-display text-4xl font-medium leading-[1.1] text-ink sm:text-5xl">
+        {isCenter && (
+          <span
+            className={cn(
+              "h-px w-10",
+              isDark
+                ? "bg-linear-to-r from-transparent to-lantern/70"
+                : "bg-linear-to-r from-transparent to-rose/50"
+            )}
+          />
+        )}
+        <h2
+          className={cn(
+            "font-display text-4xl font-semibold leading-[1.1] sm:text-5xl",
+            isDark ? "text-cream" : "text-ink"
+          )}
+        >
           {title}
         </h2>
-        {isCenter && <span className="h-px w-10 bg-champagne-gold/60" />}
+        {isCenter && (
+          <span
+            className={cn(
+              "h-px w-10",
+              isDark
+                ? "bg-linear-to-l from-transparent to-lantern/70"
+                : "bg-linear-to-l from-transparent to-rose/50"
+            )}
+          />
+        )}
       </div>
+
       {intro && (
         <p
           className={cn(
-            "max-w-2xl font-serif text-lg leading-relaxed text-ink/70 sm:text-xl",
-            isCenter ? "mx-auto" : ""
+            "max-w-2xl font-serif text-[1.1rem] leading-[1.85] sm:text-xl",
+            isCenter ? "mx-auto" : "",
+            isDark ? "text-blush/85" : "text-ink/80"
           )}
         >
           {intro}

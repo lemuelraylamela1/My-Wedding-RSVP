@@ -1,23 +1,34 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
+type Variant = "light" | "dark";
+
 export function LuxuryCard({
   className,
   children,
+  variant = "light",
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: React.HTMLAttributes<HTMLDivElement> & { variant?: Variant }) {
   return (
     <div
       className={cn(
-        "relative rounded-[2rem] border border-champagne-gold/25 bg-warm-white/80 p-8 shadow-[0_20px_60px_-30px_rgba(183,110,121,0.45)] backdrop-blur-sm sm:p-10",
+        "relative rounded-[1.75rem] p-8 sm:p-10",
+        variant === "light"
+          ? "border border-rose/20 bg-cream/90 text-ink shadow-[0_24px_64px_-32px_rgba(232,130,154,0.35)] backdrop-blur-sm"
+          : "dark-glass text-ink-light shadow-[0_24px_64px_-32px_rgba(244,196,68,0.25)]",
         className
       )}
       {...props}
     >
-      {/* inner gold hairline frame */}
+      {/* inner hairline frame */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-3 rounded-[1.5rem] border border-champagne-gold/20"
+        className={cn(
+          "pointer-events-none absolute inset-3 rounded-[1.25rem] border",
+          variant === "light"
+            ? "border-rose/15"
+            : "border-lantern/15"
+        )}
       />
       <div className="relative">{children}</div>
     </div>

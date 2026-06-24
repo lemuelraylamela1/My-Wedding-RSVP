@@ -3,23 +3,34 @@ import { wedding, coupleNames } from "@/config/wedding";
 
 export function SiteFooter() {
   return (
-    <footer className="relative border-t border-champagne-gold/20 bg-warm-white py-12">
-      <div className="mx-auto max-w-4xl px-6 text-center">
-        <p className="font-display text-2xl font-medium text-ink">
+    <footer
+      className="relative overflow-hidden py-16"
+      style={{
+        background: "linear-gradient(180deg, #1e0f3a 0%, #0d0720 100%)",
+        borderTop: "1px solid rgba(244,196,68,0.12)",
+      }}
+    >
+      {/* top lantern rule */}
+      <div className="absolute inset-x-0 top-0 h-px" style={{ background: "linear-gradient(90deg, transparent, #f4c444 50%, transparent)" }} />
+
+      <div className="mx-auto max-w-3xl px-6 text-center">
+        <p className="font-display text-3xl font-semibold text-cream">
           {coupleNames("\u2661")}
         </p>
-        <p className="mt-2 font-serif text-base italic text-deep-rose/80">
-          {wedding.event.dateLong} &middot; {wedding.event.venue.name},{" "}
-          {wedding.event.venue.city}
+        <p className="mt-2 font-serif italic" style={{ color: "#e8c880" }}>
+          {wedding.event.dateLong}
         </p>
-        {wedding.meta.hashtag && (
-          <p className="mt-4 font-sans text-xs uppercase tracking-[0.3em] text-champagne-gold-deep">
-            {wedding.meta.hashtag}
-          </p>
-        )}
-        <p className="mt-6 flex items-center justify-center gap-1.5 font-sans text-xs text-ink/50">
-          Made with <Heart className="h-3.5 w-3.5 text-deep-rose" /> for our
-          happily ever after
+        <p className="mt-1 font-sans text-sm text-cream/50">
+          {wedding.event.venue.name} · {wedding.event.venue.city}
+        </p>
+
+        <div className="mx-auto my-7 h-px w-32" style={{ background: "linear-gradient(90deg, transparent, rgba(244,196,68,0.5), transparent)" }} />
+
+        <p className="flex items-center justify-center gap-2 font-sans text-[11px] uppercase tracking-[0.25em] text-cream/40">
+          Made with <Heart className="h-3.5 w-3.5 text-rose" />  &amp; lots of lanterns
+        </p>
+        <p className="mt-2 font-sans text-xs text-cream/30">
+          © {new Date().getFullYear()} {coupleNames(" & ")}
         </p>
       </div>
     </footer>

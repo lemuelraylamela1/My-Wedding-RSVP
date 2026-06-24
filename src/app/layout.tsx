@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Playfair_Display, Inter } from "next/font/google";
+import {
+  Playfair_Display,
+  Cinzel,
+  Lora,
+  DM_Sans,
+} from "next/font/google";
 import "./globals.css";
 import { wedding } from "@/config/wedding";
 
@@ -10,17 +15,26 @@ const playfair = Playfair_Display({
   weight: ["400", "500", "600", "700"],
 });
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
+const cinzel = Cinzel({
+  variable: "--font-cinzel-var",
   subsets: ["latin"],
   display: "swap",
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "600", "700"],
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+const lora = Lora({
+  variable: "--font-lora",
   subsets: ["latin"],
   display: "swap",
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+});
+
+const dm = DM_Sans({
+  variable: "--font-dm",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["300", "400", "500", "600"],
 });
 
 const title = `${wedding.couple.groom.first} & ${wedding.couple.bride.first} | Wedding Invitation`;
@@ -60,9 +74,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${cormorant.variable} ${inter.variable} h-full antialiased`}
+      className={`${playfair.variable} ${cinzel.variable} ${lora.variable} ${dm.variable} h-full antialiased`}
     >
-      <body className="paper-texture min-h-full text-ink">{children}</body>
+      <body className="min-h-full">{children}</body>
     </html>
   );
 }

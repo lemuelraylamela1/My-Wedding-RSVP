@@ -8,17 +8,17 @@ import { GoldButton } from "@/components/ui/gold-button";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
-  { href: "#story", label: "Our Story" },
-  { href: "#details", label: "Details" },
-  { href: "#countdown", label: "Countdown" },
-  { href: "#gallery", label: "Gallery" },
-  { href: "#travel", label: "Travel" },
-  { href: "#faq", label: "FAQ" },
+  { href: "#story",     label: "Our Story"  },
+  { href: "#details",   label: "Details"    },
+  { href: "#countdown", label: "Countdown"  },
+  { href: "#gallery",   label: "Gallery"    },
+  { href: "#travel",    label: "Travel"     },
+  { href: "#faq",       label: "FAQ"        },
 ];
 
 export function SiteNav() {
-  const [scrolled, setScrolled] = React.useState(false);
-  const [menuOpen, setMenuOpen] = React.useState(false);
+  const [scrolled, setScrolled]   = React.useState(false);
+  const [menuOpen, setMenuOpen]   = React.useState(false);
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -32,24 +32,27 @@ export function SiteNav() {
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-500",
         scrolled
-          ? "border-b border-champagne-gold/20 bg-warm-white/80 backdrop-blur-md"
+          ? "border-b border-lantern/15 backdrop-blur-md"
           : "bg-transparent"
       )}
+      style={scrolled ? { backgroundColor: "rgba(13,7,32,0.82)" } : undefined}
     >
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
+        {/* wordmark */}
         <a
           href="#hero"
-          className="font-display text-lg font-medium tracking-wide text-ink"
+          className="font-display text-lg font-semibold tracking-wide text-cream"
         >
           {coupleNames("&")}
         </a>
 
+        {/* desktop links */}
         <div className="hidden items-center gap-7 lg:flex">
           {LINKS.map((l) => (
             <a
               key={l.href}
               href={l.href}
-              className="font-sans text-xs uppercase tracking-[0.2em] text-ink/70 transition-colors hover:text-deep-rose"
+              className="font-sans text-[11px] uppercase tracking-[0.2em] text-cream/65 transition-colors hover:text-lantern"
             >
               {l.label}
             </a>
@@ -64,7 +67,7 @@ export function SiteNav() {
             type="button"
             onClick={() => setMenuOpen(true)}
             aria-label="Open menu"
-            className="text-ink lg:hidden"
+            className="text-cream lg:hidden"
           >
             <Menu className="h-6 w-6" />
           </button>
@@ -77,17 +80,18 @@ export function SiteNav() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-warm-white/95 backdrop-blur-xl lg:hidden"
+            className="fixed inset-0 z-[60] backdrop-blur-xl lg:hidden"
+            style={{ backgroundColor: "rgba(13,7,32,0.96)" }}
           >
             <div className="flex items-center justify-between px-5 py-4">
-              <span className="font-display text-lg text-ink">
+              <span className="font-display text-lg text-cream">
                 {coupleNames("&")}
               </span>
               <button
                 type="button"
                 onClick={() => setMenuOpen(false)}
                 aria-label="Close menu"
-                className="text-ink"
+                className="text-cream"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -101,7 +105,7 @@ export function SiteNav() {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.05 * i + 0.1 }}
-                  className="font-display text-2xl text-ink transition-colors hover:text-deep-rose"
+                  className="font-display text-2xl font-semibold text-cream transition-colors hover:text-lantern"
                 >
                   {l.label}
                 </motion.a>

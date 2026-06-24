@@ -10,14 +10,15 @@ import {
 import { Sparkles } from "lucide-react";
 import { wedding, coupleNames } from "@/config/wedding";
 import { useExperience } from "./experience-provider";
-import { ParticleField } from "@/components/effects/particle-field";
+import { StarField } from "@/components/effects/star-field";
 import { CastleSilhouette } from "@/components/effects/castle-silhouette";
 import { GoldButton } from "@/components/ui/gold-button";
+import { FloatingLanterns } from "@/components/effects/floating-lanterns";
 
 export function InvitationGate() {
   const { guestName, open, reducedMotion } = useExperience();
 
-  // Pointer-driven tilt.
+  /* 3-D card tilt driven by pointer position */
   const rx = useMotionValue(0);
   const ry = useMotionValue(0);
   const rotateX = useSpring(rx, { stiffness: 120, damping: 18 });
@@ -32,29 +33,39 @@ export function InvitationGate() {
     ry.set(px * 16);
     rx.set(-py * 12);
   };
-  const onLeave = () => {
-    rx.set(0);
-    ry.set(0);
-  };
+  const onLeave = () => { rx.set(0); ry.set(0); };
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-linear-to-b from-warm-white via-soft-blush/40 to-soft-blush/70 px-5"
+      className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden px-5"
+      style={{
+        background: "linear-gradient(175deg, #0d0720 0%, #1e0f3a 50%, #2d1b5e 100%)",
+      }}
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6 }}
     >
-      {/* ambient glow */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-1/3 h-[60vh] w-[60vh] -translate-x-1/2 -translate-y-1/2 rounded-full bg-romantic-pink/30 blur-[120px]" />
-        <div className="absolute bottom-0 left-1/2 h-[40vh] w-[80vw] -translate-x-1/2 rounded-full bg-champagne-gold/20 blur-[100px]" />
+      {/* star field */}
+      <StarField className="absolute inset-0" count={320} parallaxFactor={0} />
+
+      {/* ambient lantern glow orbs */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div className="lantern-glow absolute left-1/3 top-1/4 h-[45vh] w-[45vh] -translate-x-1/2 -translate-y-1/2 opacity-60" />
+        <div className="lantern-glow absolute right-1/4 top-2/3 h-[30vh] w-[30vh] opacity-40" />
+        <div
+          className="absolute left-1/2 top-1/2 h-[50vh] w-[50vh] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-30"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(232,130,154,0.35) 0%, transparent 65%)",
+          }}
+        />
       </div>
 
-      {/* distant castle */}
-      <CastleSilhouette className="pointer-events-none absolute bottom-0 left-1/2 w-[140%] max-w-none -translate-x-1/2 opacity-[0.12]" />
+      {/* a few gentle lanterns floating */}
+      <FloatingLanterns count={8} className="opacity-60" />
 
-      {/* particles */}
-      <ParticleField className="absolute inset-0" interactive />
+      {/* distant castle */}
+      <CastleSilhouette className="pointer-events-none absolute bottom-0 left-1/2 w-[140%] max-w-none -translate-x-1/2 opacity-30" />
 
       {/* invitation card */}
       <motion.div
@@ -69,51 +80,57 @@ export function InvitationGate() {
         <motion.div
           animate={reducedMotion ? undefined : { y: [0, -10, 0] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          className="relative overflow-hidden rounded-[2rem] border border-champagne-gold/40 bg-[#fffdf8] px-7 py-12 text-center shadow-[0_40px_90px_-40px_rgba(183,110,121,0.55)] sm:px-12 sm:py-14"
+          className="relative overflow-hidden rounded-[2rem] px-7 py-12 text-center sm:px-12 sm:py-14"
+          style={{
+            background: "rgba(253, 246, 236, 0.94)",
+            border: "1px solid rgba(244,196,68,0.5)",
+            boxShadow:
+              "0 0 0 1px rgba(244,196,68,0.1), 0 40px 90px -30px rgba(244,196,68,0.35), 0 0 80px rgba(232,130,154,0.2)",
+          }}
         >
           {/* moving glare */}
           {!reducedMotion && (
             <motion.span
               aria-hidden
-              className="pointer-events-none absolute inset-0 opacity-40"
+              className="pointer-events-none absolute inset-0 opacity-30"
               style={{
                 background:
-                  "linear-gradient(105deg, transparent 30%, rgba(255,247,230,0.7) 50%, transparent 70%)",
+                  "linear-gradient(105deg, transparent 30%, rgba(255,247,200,0.7) 50%, transparent 70%)",
                 backgroundSize: "200% 100%",
                 backgroundPositionX: glareX,
               }}
             />
           )}
 
-          {/* gold corner flourishes */}
-          <span className="pointer-events-none absolute left-4 top-4 h-10 w-10 rounded-tl-2xl border-l border-t border-champagne-gold/50" />
-          <span className="pointer-events-none absolute right-4 top-4 h-10 w-10 rounded-tr-2xl border-r border-t border-champagne-gold/50" />
-          <span className="pointer-events-none absolute bottom-4 left-4 h-10 w-10 rounded-bl-2xl border-b border-l border-champagne-gold/50" />
-          <span className="pointer-events-none absolute bottom-4 right-4 h-10 w-10 rounded-br-2xl border-b border-r border-champagne-gold/50" />
+          {/* gold corner brackets */}
+          <span className="pointer-events-none absolute left-5 top-5 h-9 w-9 rounded-tl-xl border-l-2 border-t-2 border-lantern/60" />
+          <span className="pointer-events-none absolute right-5 top-5 h-9 w-9 rounded-tr-xl border-r-2 border-t-2 border-lantern/60" />
+          <span className="pointer-events-none absolute bottom-5 left-5 h-9 w-9 rounded-bl-xl border-b-2 border-l-2 border-lantern/60" />
+          <span className="pointer-events-none absolute bottom-5 right-5 h-9 w-9 rounded-br-xl border-b-2 border-r-2 border-lantern/60" />
 
           <div className="relative">
             <div className="mb-5 flex items-center justify-center gap-3">
-              <span className="h-px w-8 bg-champagne-gold/60" />
-              <Sparkles className="h-4 w-4 text-champagne-gold-deep" />
-              <span className="h-px w-8 bg-champagne-gold/60" />
+              <span className="h-px w-8 bg-lantern/60" />
+              <Sparkles className="h-4 w-4 text-lantern" />
+              <span className="h-px w-8 bg-lantern/60" />
             </div>
 
-            <p className="font-sans text-[11px] font-medium uppercase tracking-[0.4em] text-deep-rose/80">
+            <p className="font-cinzel text-[10px] font-semibold uppercase tracking-[0.45em] text-rose/80">
               {wedding.invitation.eyebrow}
             </p>
 
-            <h1 className="mt-6 font-display text-4xl font-medium leading-tight text-ink sm:text-5xl">
+            <h1 className="mt-6 font-display text-4xl font-bold leading-tight text-ink sm:text-5xl">
               {coupleNames("&")}
             </h1>
 
-            <p className="mt-4 font-serif text-lg italic text-champagne-gold-deep">
+            <p className="mt-3 font-serif text-lg italic text-lantern" style={{ color: "#b8860b" }}>
               {wedding.event.dateLong}
             </p>
 
-            <div className="mx-auto my-7 gold-rule w-2/3" />
+            <div className="mx-auto my-6 gold-rule w-2/3" />
 
-            <p className="font-serif text-base leading-relaxed text-ink/75">
-              <span className="block font-medium text-ink">{guestName},</span>
+            <p className="font-serif text-[1.05rem] leading-[1.85] text-ink/85">
+              <span className="block font-semibold text-ink">{guestName},</span>
               <span className="mt-2 block">{wedding.invitation.body}</span>
             </p>
 
