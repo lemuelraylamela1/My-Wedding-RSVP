@@ -1,5 +1,4 @@
 import { Experience } from "@/components/experience/experience";
-import { SiteNav } from "@/components/sections/site-nav";
 import { Hero } from "@/components/sections/hero";
 import { Quote } from "@/components/sections/quote";
 import { OurStory } from "@/components/sections/our-story";
@@ -15,7 +14,6 @@ import { SiteFooter } from "@/components/sections/site-footer";
 export default function Home() {
   return (
     <Experience>
-      <SiteNav />
       <main>
         <Hero />
         <Quote />

@@ -9,6 +9,7 @@ import {
 } from "./experience-provider";
 import { InvitationGate } from "./invitation-gate";
 import { MusicPlayer } from "./music-player";
+import { BackToTop } from "@/components/ui/back-to-top";
 
 function OpeningFallback() {
   return (
@@ -58,22 +59,21 @@ function ExperienceShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <MusicPlayer />
+      <BackToTop />
       <SmoothScroll />
 
-      {/* The full site lives in the DOM for SEO; hidden from AT until revealed. */}
+      {/* The full site lives in the DOM for SEO; hidden until revealed. */}
       <div
         aria-hidden={!revealed}
         className={
           revealed
-            ? "opacity-100"
+            ? "opacity-100 transition-opacity duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]"
             : "pointer-events-none select-none opacity-0"
         }
       >
         {children}
       </div>
 
-      {/* No "wait" mode: the opaque opening sequence mounts on top of the
-          gate immediately, so the hero is never exposed between phases. */}
       <AnimatePresence>
         {phase === "invitation" && <InvitationGate key="gate" />}
         {phase === "opening" && <OpeningSequence key="sequence" />}

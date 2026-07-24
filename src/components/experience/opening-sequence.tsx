@@ -38,6 +38,8 @@ export function OpeningSequence() {
     }
 
     const ctx = gsap.context(() => {
+      // Prefer GPU compositing for every transform tween.
+      gsap.config({ force3D: true });
       const tl = gsap.timeline({ onComplete: reveal });
 
       gsap.set(
@@ -56,41 +58,42 @@ export function OpeningSequence() {
         ],
         { opacity: 0 }
       );
-      gsap.set(".seq-stage", { scale: 1, filter: "blur(0px)" });
-      gsap.set(".seq-constellation-star", { x: 0, y: 0, scale: 0.4, opacity: 0 });
+      gsap.set(".seq-stage", { scale: 1, force3D: true });
+      gsap.set(".seq-constellation-star", { x: 0, y: 0, scale: 0.4, opacity: 0, force3D: true });
+      gsap.set(".seq-hero-lantern", { y: 140, scale: 0.72, force3D: true });
 
       // Phase 1: the dream sky opens.
       tl.add("dreamSky", 0);
       tl.fromTo(
         ".seq-moon-glow",
-        { scale: 0.58, opacity: 0.24 },
-        { scale: 1, opacity: 0.86, duration: 1.35, ease: "power2.out" },
+        { scale: 0.62, opacity: 0.2 },
+        { scale: 1, opacity: 0.82, duration: 1.5, ease: "power2.out" },
         "dreamSky"
       );
 
       // Phase 2: chapter card appears alone.
-      tl.add("chapter", 0.28);
+      tl.add("chapter", 0.22);
       tl.fromTo(
         ".seq-title-card",
-        { y: 32, opacity: 0, scale: 0.96, filter: "blur(5px)" },
-        { y: 0, opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.9, ease: "power3.out" },
+        { y: 28, opacity: 0, scale: 0.97 },
+        { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power3.out" },
         "chapter"
       );
 
       tl.to(
         ".seq-title-card",
-        { y: -28, opacity: 0, scale: 0.94, filter: "blur(6px)", duration: 0.58, ease: "power2.in" },
-        "chapter+=1.25"
+        { y: -22, opacity: 0, scale: 0.96, duration: 0.7, ease: "power2.inOut" },
+        "chapter+=1.35"
       );
 
       // Phase 3: stars gather into a constellation before the lantern arrives.
-      tl.add("starsForm", 2.0);
-      tl.to(".seq-constellation", { opacity: 1, duration: 0.2 }, "starsForm");
+      tl.add("starsForm", 2.1);
+      tl.to(".seq-constellation", { opacity: 1, duration: 0.25 }, "starsForm");
       tl.fromTo(
         ".seq-constellation-star",
         {
-          x: (index) => (index % 2 === 0 ? -1 : 1) * (90 + index * 8),
-          y: (index) => (index % 3 === 0 ? -1 : 1) * (42 + index * 5),
+          x: (index) => (index % 2 === 0 ? -1 : 1) * (80 + index * 7),
+          y: (index) => (index % 3 === 0 ? -1 : 1) * (36 + index * 4),
           scale: 0.35,
           opacity: 0,
         },
@@ -99,93 +102,100 @@ export function OpeningSequence() {
           y: 0,
           scale: 1,
           opacity: 1,
-          duration: 0.9,
-          stagger: 0.045,
-          ease: "power3.out",
+          duration: 1,
+          stagger: 0.04,
+          ease: "power2.out",
         },
         "starsForm"
       );
       tl.to(
         ".seq-constellation-line",
-        { opacity: 0.58, duration: 0.55, stagger: 0.045, ease: "power2.out" },
-        "starsForm+=0.44"
+        { opacity: 0.55, duration: 0.6, stagger: 0.04, ease: "power2.out" },
+        "starsForm+=0.4"
       );
       tl.fromTo(
         ".seq-constellation-core",
-        { scale: 0.4, opacity: 0 },
-        { scale: 1, opacity: 0.9, duration: 0.58, ease: "back.out(1.7)" },
-        "starsForm+=0.72"
+        { scale: 0.45, opacity: 0 },
+        { scale: 1, opacity: 0.88, duration: 0.65, ease: "power2.out" },
+        "starsForm+=0.7"
       );
       tl.to(
         ".seq-constellation",
-        { scale: 1.12, opacity: 0, filter: "blur(8px)", duration: 0.72, ease: "power2.in" },
-        "starsForm+=1.45"
+        { scale: 1.08, opacity: 0, duration: 0.8, ease: "power2.inOut" },
+        "starsForm+=1.5"
       );
 
-      // Phase 4: lantern rise, after constellation dissolves.
-      tl.add("lanternRise", 3.38);
-      tl.fromTo(
+      // Phase 4: lantern rise — smooth constant-feel float (no bounce).
+      tl.add("lanternRise", 3.55);
+      tl.to(
         ".seq-hero-lantern",
-        { y: 118, opacity: 0, scale: 0.68, rotate: -7 },
-        { y: -20, opacity: 1, scale: 1, rotate: 0, duration: 1.05, ease: "back.out(1.22)" },
+        {
+          y: -24,
+          opacity: 1,
+          scale: 1,
+          duration: 1.45,
+          ease: "power1.out",
+        },
         "lanternRise"
       );
 
       tl.fromTo(
         ".seq-light-trail",
         { scaleX: 0, opacity: 0, transformOrigin: "50% 100%" },
-        { scaleX: 1, opacity: 1, duration: 0.82, ease: "power2.out" },
-        "lanternRise+=0.2"
+        { scaleX: 1, opacity: 1, duration: 1, ease: "power2.out" },
+        "lanternRise+=0.25"
       );
 
       // Phase 5: the world opens.
-      tl.add("worldOpen", 4.12);
+      tl.add("worldOpen", 4.55);
       tl.fromTo(
         ".seq-lanterns",
         { opacity: 0 },
-        { opacity: 1, duration: 0.72, ease: "power1.out" },
+        { opacity: 1, duration: 1.1, ease: "power1.out" },
         "worldOpen"
       );
 
       tl.fromTo(
         ".seq-kingdom",
-        { y: 44, opacity: 0, scale: 1.04, filter: "blur(7px)" },
-        { y: 0, opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.1, ease: "power3.out" },
-        "worldOpen+=0.14"
+        { y: 36, opacity: 0, scale: 1.03 },
+        { y: 0, opacity: 1, scale: 1, duration: 1.25, ease: "power2.out" },
+        "worldOpen+=0.1"
       );
 
       tl.fromTo(
         ".seq-sparkles",
         { opacity: 0 },
-        { opacity: 1, duration: 0.58 },
-        "worldOpen+=0.34"
+        { opacity: 1, duration: 0.75, ease: "power1.out" },
+        "worldOpen+=0.3"
       );
 
       tl.fromTo(
         ".seq-reflection",
-        { opacity: 0, y: 18 },
-        { opacity: 1, y: 0, duration: 0.68, ease: "power2.out" },
-        "worldOpen+=0.46"
+        { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.85, ease: "power2.out" },
+        "worldOpen+=0.4"
       );
 
-      // Phase 6: clean camera push and warm reveal.
-      tl.add("pushReveal", 5.24);
+      // Phase 6: soft camera push into the site — no harsh blur.
+      tl.add("pushReveal", 5.85);
       tl.to(
         ".seq-stage",
         {
-          scale: 1.24,
-          filter: "blur(1.5px)",
-          duration: 0.86,
-          ease: "power2.in",
+          scale: 1.18,
+          duration: 1.05,
+          ease: "power2.inOut",
         },
         "pushReveal"
       );
 
       tl.to(
         ".seq-flash",
-        { opacity: 1, duration: 0.62, ease: "power2.inOut" },
-        "pushReveal+=0.24"
+        { opacity: 1, duration: 0.85, ease: "power1.inOut" },
+        "pushReveal+=0.2"
       );
+
+      // Hold a beat so the dissolve into hero feels continuous.
+      tl.to({}, { duration: 0.2 });
     }, root);
 
     return () => ctx.revert();
@@ -194,17 +204,16 @@ export function OpeningSequence() {
   return (
     <motion.div
       ref={root}
-      className="fixed inset-0 z-[110] flex items-center justify-center overflow-hidden"
+      className="fixed inset-0 z-110 flex items-center justify-center overflow-hidden"
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+      exit={{ opacity: 0, transition: { duration: 1.1, ease: [0.22, 1, 0.36, 1] } }}
     >
       <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, #070314 0%, #0d0720 38%, #1e0f3a 70%, #39205f 100%)" }} />
-      <div className="seq-moon-glow pointer-events-none absolute left-1/2 top-[42%] h-[78vh] w-[78vh] -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl" style={{ background: "radial-gradient(circle, rgba(255,223,112,0.55), rgba(232,130,154,0.24) 42%, transparent 70%)" }} />
-      <MagicDust count={34} intensity="bright" className="opacity-80" />
+      <div className="seq-moon-glow pointer-events-none absolute left-1/2 top-[42%] h-[78vh] w-[78vh] -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ background: "radial-gradient(circle, rgba(255,223,112,0.55), rgba(232,130,154,0.24) 42%, transparent 70%)" }} />
+      <MagicDust count={22} intensity="bright" className="opacity-70" />
 
       <div className="seq-lanterns absolute inset-0 opacity-0">
-        <FloatingLanterns count={30} intensity="festival" />
+        <FloatingLanterns count={16} intensity="festival" />
       </div>
       <div className="seq-sparkles absolute inset-0 opacity-0">
         <ParticleField density={0.0003} />
