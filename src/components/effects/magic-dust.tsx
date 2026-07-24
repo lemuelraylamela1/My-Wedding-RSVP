@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useMounted } from "@/hooks/use-mounted";
@@ -30,15 +31,21 @@ export function MagicDust({
 }) {
   const mounted = useMounted();
   const safeCount = Math.min(count, 30);
-  const dust: Dust[] = Array.from({ length: safeCount }, (_, i) => ({
-    left: seededUnit(i, 1) * 100,
-    top: seededUnit(i, 2) * 100,
-    size: seededUnit(i, 3) * 3 + 2,
-    delay: seededUnit(i, 4) * 5,
-    duration: seededUnit(i, 5) * 5 + 5,
-    driftX: seededUnit(i, 6) * 44 - 22,
-    driftY: seededUnit(i, 7) * 38 - 28,
-  }));
+  // Deterministic seeded positions — memoized so the array isn't reallocated on
+  // every parent render.
+  const dust = React.useMemo<Dust[]>(
+    () =>
+      Array.from({ length: safeCount }, (_, i) => ({
+        left: seededUnit(i, 1) * 100,
+        top: seededUnit(i, 2) * 100,
+        size: seededUnit(i, 3) * 3 + 2,
+        delay: seededUnit(i, 4) * 5,
+        duration: seededUnit(i, 5) * 5 + 5,
+        driftX: seededUnit(i, 6) * 44 - 22,
+        driftY: seededUnit(i, 7) * 38 - 28,
+      })),
+    [safeCount],
+  );
 
   const opacity =
     intensity === "bright" ? [0, 0.95, 0.25, 0.8, 0] : intensity === "soft" ? [0, 0.45, 0.1, 0.35, 0] : [0, 0.7, 0.18, 0.55, 0];

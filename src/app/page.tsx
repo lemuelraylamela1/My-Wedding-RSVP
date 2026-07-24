@@ -1,6 +1,7 @@
 import { Experience } from "@/components/experience/experience";
 import { SiteNav } from "@/components/sections/site-nav";
 import { Hero } from "@/components/sections/hero";
+import { Quote } from "@/components/sections/quote";
 import { OurStory } from "@/components/sections/our-story";
 import { EventDetails } from "@/components/sections/event-details";
 import { Countdown } from "@/components/sections/countdown";
@@ -17,14 +18,15 @@ export default function Home() {
       <SiteNav />
       <main>
         <Hero />
+        <Quote />
         <OurStory />
         <EventDetails />
-        <Countdown />
         <Gallery />
-        <Rsvp />
-        <Faq />
+        <Countdown />
         <Travel />
+        <Faq />
         <FinalInvitation />
+        <Rsvp />
       </main>
       <SiteFooter />
     </Experience>

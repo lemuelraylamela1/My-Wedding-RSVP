@@ -148,19 +148,25 @@ export function FloatingLanterns({
 
   const maxCount = intensity === "festival" ? 24 : 14;
   const safeCount = Math.min(count, maxCount);
-  const lanterns: Lantern[] = Array.from({ length: safeCount }, (_, i) => ({
-    left: (i / Math.max(safeCount, 1)) * 100 + (seededUnit(i, 1) * 6 - 3),
-    size:
-      seededUnit(i, 2) * (intensity === "festival" ? 24 : 20) +
-      (intensity === "festival" ? 16 : 18),
-    delay: seededUnit(i, 3) * (intensity === "festival" ? 5 : 8),
-    duration: seededUnit(i, 4) * 10 + (intensity === "festival" ? 12 : 14),
-    drift:
-      seededUnit(i, 5) * (intensity === "festival" ? 56 : 40) -
-      (intensity === "festival" ? 28 : 20),
-    sway: seededUnit(i, 6) * 6 + 3,
-    opacity: seededUnit(i, 7) * 0.4 + (intensity === "festival" ? 0.5 : 0.45),
-  }));
+  // The lantern set is fully deterministic (seeded), so it only needs to be
+  // recomputed when the count or intensity changes rather than every render.
+  const lanterns = React.useMemo<Lantern[]>(
+    () =>
+      Array.from({ length: safeCount }, (_, i) => ({
+        left: (i / Math.max(safeCount, 1)) * 100 + (seededUnit(i, 1) * 6 - 3),
+        size:
+          seededUnit(i, 2) * (intensity === "festival" ? 24 : 20) +
+          (intensity === "festival" ? 16 : 18),
+        delay: seededUnit(i, 3) * (intensity === "festival" ? 5 : 8),
+        duration: seededUnit(i, 4) * 10 + (intensity === "festival" ? 12 : 14),
+        drift:
+          seededUnit(i, 5) * (intensity === "festival" ? 56 : 40) -
+          (intensity === "festival" ? 28 : 20),
+        sway: seededUnit(i, 6) * 6 + 3,
+        opacity: seededUnit(i, 7) * 0.4 + (intensity === "festival" ? 0.5 : 0.45),
+      })),
+    [safeCount, intensity],
+  );
 
   return (
     <div

@@ -12,6 +12,12 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.join(__dirname),
   },
+  experimental: {
+    // Tree-shake barrel imports so only the icons/motion primitives actually
+    // used are bundled. `lucide-react` is optimized by default; `framer-motion`
+    // is not, and it is imported across most sections/effects.
+    optimizePackageImports: ["framer-motion"],
+  },
   async headers() {
     return [
       {

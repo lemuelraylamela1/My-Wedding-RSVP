@@ -45,6 +45,7 @@ export function ParticleField({
     let height = 0;
     let particles: Particle[] = [];
     let raf = 0;
+    let visible = true;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const mouse = { x: -9999, y: -9999 };
 
@@ -113,7 +114,9 @@ export function ParticleField({
       ctx.globalAlpha = 1;
       ctx.shadowBlur = 0;
 
-      if (!reduce) raf = requestAnimationFrame(draw);
+      // Stop scheduling frames while the canvas is scrolled out of view.
+      if (!reduce && visible) raf = requestAnimationFrame(draw);
+      else raf = 0;
     };
 
     build();
@@ -121,8 +124,9 @@ export function ParticleField({
 
     const onResize = () => {
       cancelAnimationFrame(raf);
+      raf = 0;
       build();
-      draw();
+      if (visible) draw();
     };
     const onMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
@@ -130,11 +134,26 @@ export function ParticleField({
       mouse.y = e.clientY - rect.top;
     };
 
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) {
+          if (!raf && !reduce) draw();
+        } else if (raf) {
+          cancelAnimationFrame(raf);
+          raf = 0;
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    io.observe(canvas);
+
     window.addEventListener("resize", onResize);
     if (interactive) window.addEventListener("mousemove", onMove);
 
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
       window.removeEventListener("resize", onResize);
       if (interactive) window.removeEventListener("mousemove", onMove);
     };

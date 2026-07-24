@@ -90,7 +90,10 @@ export function MusicPlayer() {
         ref={audioRef}
         src={AUDIO_SRC}
         loop
-        preload="auto"
+        // Don't download the (large) track on initial page load. It is only
+        // needed once the guest opens the invitation, at which point play() is
+        // called and the browser fetches it; the 5.2s fade-in masks any buffer.
+        preload="none"
         onError={() => setAvailable(false)}
       />
       <AnimatePresence>

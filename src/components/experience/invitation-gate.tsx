@@ -1,13 +1,8 @@
 "use client";
 
 import * as React from "react";
-import {
-  motion,
-  useMotionValue,
-  useSpring,
-  useTransform,
-} from "framer-motion";
-import { Loader2, Sparkles } from "lucide-react";
+import { motion, type Variants } from "framer-motion";
+import { Loader2 } from "lucide-react";
 import { wedding, coupleNames } from "@/config/wedding";
 import { useExperience } from "./experience-provider";
 import { StarField } from "@/components/effects/star-field";
@@ -16,41 +11,92 @@ import { GoldButton } from "@/components/ui/gold-button";
 import { FloatingLanterns } from "@/components/effects/floating-lanterns";
 import { MagicDust } from "@/components/effects/magic-dust";
 import { LanternReflection } from "@/components/effects/lantern-reflection";
+import { Fireflies } from "@/components/effects/fireflies";
 import { useMounted } from "@/hooks/use-mounted";
 
+const LUXURY = [0.16, 1, 0.3, 1] as const;
+
+/** Gold particles the scroll dissolves into when the guest opens the invitation. */
+function dissolveParticle(i: number) {
+  const seed = Math.sin(i * 12.9898) * 43758.5453;
+  const r = seed - Math.floor(seed);
+  const seed2 = Math.sin(i * 78.233) * 43758.5453;
+  const r2 = seed2 - Math.floor(seed2);
+  const angle = r * Math.PI * 2;
+  const dist = 120 + r2 * 260;
+  return {
+    x: Math.cos(angle) * dist,
+    y: Math.sin(angle) * dist - 60,
+    size: 3 + r2 * 6,
+    delay: r * 0.12,
+    duration: 0.6 + r2 * 0.5,
+  };
+}
+
+/* Content reveal — parchment text fades in section by section after the unroll. */
+const container: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.14, delayChildren: 0.12 } },
+};
+const item: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: LUXURY } },
+};
+
+function ScrollRod({ position }: { position: "top" | "bottom" }) {
+  return (
+    <div
+      aria-hidden
+      className={`pointer-events-none absolute inset-x-[-0.6rem] z-20 flex h-4 items-center sm:h-5 ${
+        position === "top" ? "-top-2" : "-bottom-2"
+      }`}
+    >
+      <span className="scroll-rod-cap h-6 w-6 shrink-0 rounded-full sm:h-7 sm:w-7" />
+      <span className="scroll-rod h-full flex-1 rounded-full" />
+      <span className="scroll-rod-cap h-6 w-6 shrink-0 rounded-full sm:h-7 sm:w-7" />
+    </div>
+  );
+}
+
 export function InvitationGate() {
-  const { guestName, invitationLoading, invitationError, open, reducedMotion } = useExperience();
+  const { guestName, invitationLoading, invitationError, open, reducedMotion } =
+    useExperience();
   const mounted = useMounted();
 
-  /* 3-D card tilt driven by pointer position */
-  const rx = useMotionValue(0);
-  const ry = useMotionValue(0);
-  const rotateX = useSpring(rx, { stiffness: 120, damping: 18 });
-  const rotateY = useSpring(ry, { stiffness: 120, damping: 18 });
-  const glareX = useTransform(rotateY, [-8, 8], ["0%", "100%"]);
+  const [unrolled, setUnrolled] = React.useState(false);
+  const [dissolving, setDissolving] = React.useState(false);
 
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (reducedMotion) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width - 0.5;
-    const py = (e.clientY - rect.top) / rect.height - 0.5;
-    ry.set(px * 16);
-    rx.set(-py * 12);
-  };
-  const onLeave = () => { rx.set(0); ry.set(0); };
+  // Reduced motion: skip the cinematic unroll, reveal content immediately.
+  React.useEffect(() => {
+    if (reducedMotion) setUnrolled(true);
+  }, [reducedMotion]);
+
+  const handleOpen = React.useCallback(() => {
+    if (dissolving) return;
+    if (reducedMotion) {
+      open();
+      return;
+    }
+    setDissolving(true);
+    window.setTimeout(open, 760);
+  }, [dissolving, reducedMotion, open]);
+
+  const contentActive = unrolled && !dissolving;
 
   return (
     <motion.div
       className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden px-5"
       style={{
-        background: "linear-gradient(175deg, #0d0720 0%, #1e0f3a 50%, #2d1b5e 100%)",
+        background:
+          "linear-gradient(175deg, #0d0720 0%, #1e0f3a 50%, #2d1b5e 100%)",
       }}
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6 }}
     >
+      {/* ── Night atmosphere (lanterns stay — core to the theme) ───────── */}
       <StarField className="absolute inset-0" count={320} parallaxFactor={0} />
-      <MagicDust count={28} intensity="soft" className="opacity-70" />
+      <MagicDust count={22} intensity="soft" className="opacity-70" />
 
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="lantern-glow absolute left-1/3 top-1/4 h-[45vh] w-[45vh] -translate-x-1/2 -translate-y-1/2 opacity-60" />
@@ -65,151 +111,240 @@ export function InvitationGate() {
       </div>
 
       <FloatingLanterns count={12} className="opacity-70" />
+      <Fireflies count={16} className="opacity-90" />
       <LanternReflection className="opacity-70" />
-
       <CastleSilhouette className="pointer-events-none absolute bottom-0 left-1/2 w-[140%] max-w-none -translate-x-1/2 opacity-30" />
 
-      {/* invitation card */}
+      {/* soft cinematic vignette focusing the eye on the scroll */}
+      <div aria-hidden className="scroll-vignette pointer-events-none absolute inset-0 z-5" />
+
+      {/* ── The scroll ────────────────────────────────────────────────── */}
       <motion.div
-        key={mounted ? "entered" : "pending"}
-        onMouseMove={onMove}
-        onMouseLeave={onLeave}
-        style={{ rotateX, rotateY, transformPerspective: 1200 }}
-        initial={mounted ? { opacity: 0, y: 40, scale: 0.92 } : false}
-        animate={mounted ? { opacity: 1, y: 0, scale: 1 } : false}
-        transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
         className="relative z-10 w-full max-w-md"
+        initial={mounted ? { opacity: 0, y: -46, scale: 0.9 } : false}
+        animate={
+          mounted
+            ? dissolving
+              ? { opacity: 0, scale: 1.05, filter: "blur(8px)" }
+              : { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }
+            : false
+        }
+        transition={
+          dissolving
+            ? { duration: 0.7, ease: "easeIn" }
+            : { duration: 1, ease: LUXURY, delay: 0.2 }
+        }
       >
+        {/* gentle floating loop, decoupled from entrance */}
         <motion.div
-          animate={mounted && !reducedMotion ? { y: [0, -10, 0] } : undefined}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          className="relative overflow-hidden rounded-[2rem] px-7 py-12 text-center sm:px-12 sm:py-14"
-          style={{
-            background:
-              "linear-gradient(145deg, rgba(253,246,236,0.96), rgba(252,232,239,0.94) 48%, rgba(253,246,236,0.98))",
-            border: "1px solid rgba(244,196,68,0.58)",
-            boxShadow:
-              "0 0 0 1px rgba(244,196,68,0.16), 0 44px 100px -32px rgba(244,196,68,0.48), 0 0 100px rgba(232,130,154,0.24)",
+          animate={
+            mounted && !reducedMotion && !dissolving
+              ? { y: [0, -8, 0] }
+              : undefined
+          }
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1.4,
           }}
         >
-          <motion.span
-            aria-hidden
-            className="pointer-events-none absolute inset-[10px] rounded-[1.55rem] border border-lantern/30"
-            animate={mounted && !reducedMotion ? { opacity: [0.35, 0.8, 0.35] } : undefined}
-            transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -left-20 top-12 h-40 w-40 rounded-full bg-lantern/20 blur-3xl"
-          />
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -right-14 bottom-10 h-36 w-36 rounded-full bg-rose/20 blur-3xl"
-          />
+          <ScrollRod position="top" />
 
-          {/* moving glare */}
-          {!reducedMotion && mounted && (
-            <motion.span
+          {/* parchment body — unrolls from the centre in both directions */}
+          <motion.div
+            className="parchment parchment-edges relative overflow-hidden rounded-md px-7 py-11 text-center sm:px-11 sm:py-14"
+            style={{ transformOrigin: "center", willChange: "transform" }}
+            initial={mounted ? { scaleY: reducedMotion ? 1 : 0 } : false}
+            animate={mounted ? { scaleY: 1 } : false}
+            transition={{
+              duration: reducedMotion ? 0 : 1.5,
+              delay: reducedMotion ? 0 : 1.1,
+              ease: LUXURY,
+            }}
+            onAnimationComplete={() => setUnrolled(true)}
+          >
+            {/* paper grain overlay */}
+            <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 opacity-30"
-              style={{
-                background:
-                  "linear-gradient(105deg, transparent 30%, rgba(255,247,200,0.7) 50%, transparent 70%)",
-                backgroundSize: "200% 100%",
-                backgroundPositionX: glareX,
-              }}
+              className="parchment-grain pointer-events-none absolute inset-0 rounded-md"
             />
-          )}
 
-          <span className="pointer-events-none absolute left-5 top-5 h-9 w-9 rounded-tl-xl border-l-2 border-t-2 border-lantern/60" />
-          <span className="pointer-events-none absolute right-5 top-5 h-9 w-9 rounded-tr-xl border-r-2 border-t-2 border-lantern/60" />
-          <span className="pointer-events-none absolute bottom-5 left-5 h-9 w-9 rounded-bl-xl border-b-2 border-l-2 border-lantern/60" />
-          <span className="pointer-events-none absolute bottom-5 right-5 h-9 w-9 rounded-br-xl border-b-2 border-r-2 border-lantern/60" />
+            {/* gold ornamental corners */}
+            <span className="pointer-events-none absolute left-3 top-3 h-8 w-8 rounded-tl-md border-l-2 border-t-2 border-[#b8860b]/50" />
+            <span className="pointer-events-none absolute right-3 top-3 h-8 w-8 rounded-tr-md border-r-2 border-t-2 border-[#b8860b]/50" />
+            <span className="pointer-events-none absolute bottom-3 left-3 h-8 w-8 rounded-bl-md border-b-2 border-l-2 border-[#b8860b]/50" />
+            <span className="pointer-events-none absolute bottom-3 right-3 h-8 w-8 rounded-br-md border-b-2 border-r-2 border-[#b8860b]/50" />
 
-          <div className="relative">
+            {/* ── Invitation content ─────────────────────────────────── */}
             <motion.div
-              className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-lantern/45 bg-night/90 text-lantern shadow-[0_0_45px_rgba(244,196,68,0.36)]"
-              animate={
-                mounted && !reducedMotion
-                  ? {
-                      y: [0, -6, 0],
-                      boxShadow: [
-                        "0 0 35px rgba(244,196,68,0.28)",
-                        "0 0 62px rgba(244,196,68,0.52)",
-                        "0 0 35px rgba(244,196,68,0.28)",
-                      ],
-                    }
-                  : undefined
-              }
-              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+              className="relative"
+              variants={container}
+              initial="hidden"
+              animate={contentActive ? "show" : "hidden"}
             >
-              <Sparkles className="h-6 w-6" />
-            </motion.div>
-
-            <div className="mb-5 flex items-center justify-center gap-3">
-              <span className="h-px w-8 bg-lantern/60" />
-              <Sparkles className="h-4 w-4 text-lantern" />
-              <span className="h-px w-8 bg-lantern/60" />
-            </div>
-
-            <p className="font-cinzel text-[10px] font-semibold uppercase tracking-[0.45em] text-rose/80">
-              {wedding.invitation.eyebrow}
-            </p>
-
-            <h1 className="mt-6 font-display text-4xl font-bold leading-tight text-ink sm:text-5xl">
-              {coupleNames("&")}
-            </h1>
-
-            <p className="mt-3 font-serif text-lg italic text-lantern" style={{ color: "#b8860b" }}>
-              {wedding.event.dateLong}
-            </p>
-
-            <div className="mx-auto my-6 gold-rule w-2/3" />
-
-            {invitationLoading ? (
-              <div className="flex flex-col items-center py-4" role="status" aria-live="polite">
-                <motion.div
-                  className="flex h-14 w-14 items-center justify-center rounded-full border border-lantern/45 bg-night/90 text-lantern shadow-[0_0_35px_rgba(244,196,68,0.3)]"
-                  animate={
-                    mounted && !reducedMotion
-                      ? { scale: [1, 1.06, 1], opacity: [0.85, 1, 0.85] }
-                      : undefined
-                  }
-                  transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <Loader2 className="h-6 w-6 animate-spin" />
-                </motion.div>
-                <p className="mt-5 font-serif text-[1.05rem] text-ink/80">
-                  Preparing your invitation...
-                </p>
-                <p className="mt-2 font-sans text-[10px] uppercase tracking-[0.3em] text-ink/40">
-                  Loading guest details
-                </p>
-              </div>
-            ) : (
-              <>
-                <p className="font-serif text-[1.05rem] leading-[1.85] text-ink/85">
-                  <span className="block font-semibold text-ink">{guestName},</span>
-                  <span className="mt-2 block">{wedding.invitation.body}</span>
-                </p>
-                {invitationError && (
-                  <p className="mt-3 text-xs text-rose">{invitationError}</p>
-                )}
-
-                <div className="mt-9">
-                  <GoldButton size="lg" onClick={open} disabled={Boolean(invitationError)}>
-                    {wedding.invitation.cta}
-                  </GoldButton>
+              {/* crest */}
+              <motion.div variants={item} className="mb-5 flex justify-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#b8860b]/50 bg-[#4a3218]/10 text-[#8a5a1e] shadow-[inset_0_0_18px_rgba(120,72,28,0.25)]">
+                  <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none">
+                    <path
+                      d="M12 2l2.4 5.6L20 8.6l-4 4.1.9 5.7L12 15.8 7.1 18.4 8 12.7 4 8.6l5.6-1z"
+                      fill="currentColor"
+                      opacity="0.85"
+                    />
+                  </svg>
                 </div>
+              </motion.div>
 
-                <p className="mt-5 font-sans text-[10px] uppercase tracking-[0.3em] text-ink/40">
-                  Tap to release the lanterns - music will play
-                </p>
-              </>
-            )}
-          </div>
+              <motion.p
+                variants={item}
+                className="font-cinzel text-[10px] font-semibold uppercase tracking-[0.42em] text-[#9c6b1a]"
+              >
+                {wedding.invitation.eyebrow}
+              </motion.p>
+
+              {/* bride & groom */}
+              <motion.h1
+                variants={item}
+                className="mt-4 font-display text-4xl font-bold leading-tight text-[#3a2410] sm:text-5xl"
+              >
+                {coupleNames("&")}
+              </motion.h1>
+
+              {/* decorative divider */}
+              <motion.div
+                variants={item}
+                className="my-6 flex items-center justify-center gap-3"
+              >
+                <span className="h-px w-12 bg-linear-to-r from-transparent to-[#b8860b]/70" />
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-[#b8860b]" fill="currentColor">
+                  <path d="M12 2l1.6 3.8L17.5 6l-2.7 2.8L15.4 13 12 10.9 8.6 13l.6-4.2L6.5 6l3.9-.2z" />
+                </svg>
+                <span className="h-px w-12 bg-linear-to-l from-transparent to-[#b8860b]/70" />
+              </motion.div>
+
+              {invitationLoading ? (
+                <div
+                  className="flex flex-col items-center py-3"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#b8860b]/45 text-[#8a5a1e]">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  </div>
+                  <p className="mt-4 font-serif text-[1rem] text-[#4a3218]/80">
+                    Preparing your invitation...
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {/* invitation message */}
+                  <motion.p
+                    variants={item}
+                    className="font-serif text-[1.02rem] leading-[1.85] text-[#4a3218]/90"
+                  >
+                    {wedding.invitation.body}
+                  </motion.p>
+
+                  {/* guest name */}
+                  <motion.p
+                    variants={item}
+                    className="mt-5 font-display text-xl font-semibold text-[#3a2410]"
+                  >
+                    {guestName}
+                  </motion.p>
+
+                  {/* wedding details */}
+                  <motion.div
+                    variants={item}
+                    className="mx-auto mt-6 max-w-xs border-y border-[#b8860b]/25 py-4 font-serif text-[#4a3218]/85"
+                  >
+                    <p className="text-[0.7rem] uppercase tracking-[0.28em] text-[#9c6b1a]">
+                      {wedding.event.dayOfWeek}
+                    </p>
+                    <p className="mt-1 font-display text-lg font-semibold text-[#3a2410]">
+                      {wedding.event.dateLong}
+                    </p>
+                    <p className="mt-1 text-sm italic">
+                      {wedding.event.ceremony.time} &middot;{" "}
+                      {wedding.event.ceremony.timezoneNote}
+                    </p>
+                    <p className="mt-2 text-sm">
+                      {wedding.event.venue.name}, {wedding.event.venue.city}
+                    </p>
+                  </motion.div>
+
+                  {invitationError && (
+                    <motion.p
+                      variants={item}
+                      className="mt-3 text-xs text-[#a13b2a]"
+                    >
+                      {invitationError}
+                    </motion.p>
+                  )}
+
+                  {/* open invitation button */}
+                  <motion.div variants={item} className="mt-8">
+                    <GoldButton
+                      size="lg"
+                      onClick={handleOpen}
+                      disabled={Boolean(invitationError)}
+                    >
+                      Open Invitation
+                    </GoldButton>
+                  </motion.div>
+
+                  <motion.p
+                    variants={item}
+                    className="mt-4 font-sans text-[10px] uppercase tracking-[0.28em] text-[#9c6b1a]/70"
+                  >
+                    Tap to release the lanterns - music will play
+                  </motion.p>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+
+          <ScrollRod position="bottom" />
         </motion.div>
       </motion.div>
+
+      {/* ── Golden dissolve burst ─────────────────────────────────────── */}
+      {dissolving && !reducedMotion && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-1/2 z-15"
+        >
+          {Array.from({ length: 28 }, (_, i) => {
+            const p = dissolveParticle(i);
+            return (
+              <motion.span
+                key={i}
+                className="absolute rounded-full"
+                style={{
+                  width: p.size,
+                  height: p.size,
+                  background:
+                    "radial-gradient(circle, rgba(255,250,220,1), rgba(244,196,68,0.75) 45%, transparent 72%)",
+                  boxShadow: "0 0 12px rgba(255,214,110,0.9)",
+                }}
+                initial={{ x: 0, y: 0, opacity: 0, scale: 0.4 }}
+                animate={{
+                  x: p.x,
+                  y: p.y,
+                  opacity: [0, 1, 0],
+                  scale: [0.4, 1.15, 0.2],
+                }}
+                transition={{
+                  duration: p.duration,
+                  delay: p.delay,
+                  ease: "easeOut",
+                }}
+              />
+            );
+          })}
+        </div>
+      )}
     </motion.div>
   );
 }

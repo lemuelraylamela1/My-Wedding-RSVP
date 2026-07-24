@@ -212,8 +212,8 @@ export function Hero() {
           transition={{ duration: 1, delay: 1.05 }}
           className="mt-9"
         >
-          <a href="#rsvp">
-            <GoldButton size="lg">{wedding.final.cta}</GoldButton>
+          <a href="#story">
+            <GoldButton size="lg">Enter Our Story</GoldButton>
           </a>
         </motion.div>
       </motion.div>

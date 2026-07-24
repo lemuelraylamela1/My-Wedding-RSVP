@@ -9,6 +9,7 @@ type Star = {
   baseAlpha: number;
   phase: number;
   speed: number;
+  color: string;
 };
 
 const STAR_COLORS = ["#ffffff", "#fce8ef", "#ffdf70", "#e8c880", "#f5c0cf"];
@@ -41,6 +42,7 @@ export function StarField({
     let h = 0;
     let stars: Star[] = [];
     let raf = 0;
+    let visible = true;
 
     const build = () => {
       w = canvas.clientWidth;
@@ -57,6 +59,10 @@ export function StarField({
         baseAlpha: Math.random() * 0.5 + 0.35,
         phase: Math.random() * Math.PI * 2,
         speed: Math.random() * 0.018 + 0.006,
+        // Assign a stable color once at build time. Previously the fill color
+        // was re-randomized for every star on every frame, which added tens of
+        // thousands of Math.random() calls per second and produced GC churn.
+        color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)],
       }));
     };
 
@@ -71,7 +77,7 @@ export function StarField({
 
         ctx.beginPath();
         ctx.arc(s.x, y, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)];
+        ctx.fillStyle = s.color;
         ctx.globalAlpha = alpha;
         ctx.shadowBlur = s.r * 5;
         ctx.shadowColor = "#ffdf70";
@@ -80,7 +86,11 @@ export function StarField({
       ctx.globalAlpha = 1;
       ctx.shadowBlur = 0;
 
-      if (!reduce) raf = requestAnimationFrame(draw);
+      // Only schedule the next frame while the canvas is on screen. Multiple
+      // star fields live on the page at once; without this each one would keep
+      // painting at 60fps even when scrolled far out of view.
+      if (!reduce && visible) raf = requestAnimationFrame(draw);
+      else raf = 0;
     };
 
     const onScroll = () => {
@@ -89,18 +99,35 @@ export function StarField({
 
     const onResize = () => {
       cancelAnimationFrame(raf);
+      raf = 0;
       build();
-      draw();
+      if (visible) draw();
     };
 
     build();
     draw();
+
+    // Pause/resume the animation loop based on viewport visibility.
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) {
+          if (!raf && !reduce) draw();
+        } else if (raf) {
+          cancelAnimationFrame(raf);
+          raf = 0;
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    io.observe(canvas);
 
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
 
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
     };

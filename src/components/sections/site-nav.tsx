@@ -4,14 +4,13 @@ import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { coupleNames } from "@/config/wedding";
-import { GoldButton } from "@/components/ui/gold-button";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
   { href: "#story",     label: "Our Story"  },
   { href: "#details",   label: "Details"    },
-  { href: "#countdown", label: "Countdown"  },
   { href: "#gallery",   label: "Gallery"    },
+  { href: "#countdown", label: "Countdown"  },
   { href: "#travel",    label: "Travel"     },
   { href: "#faq",       label: "FAQ"        },
 ];
@@ -21,8 +20,21 @@ export function SiteNav() {
   const [menuOpen, setMenuOpen]   = React.useState(false);
 
   React.useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    onScroll();
+    // Coalesce scroll events into a single rAF-batched read. setScrolled only
+    // triggers a re-render when the boolean actually flips, so the header no
+    // longer re-renders on every scroll frame.
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      setScrolled(window.scrollY > 40);
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -60,9 +72,6 @@ export function SiteNav() {
         </div>
 
         <div className="flex items-center gap-3">
-          <a href="#rsvp" className="hidden sm:block">
-            <GoldButton size="sm">RSVP</GoldButton>
-          </a>
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
@@ -97,7 +106,7 @@ export function SiteNav() {
               </button>
             </div>
             <div className="flex flex-col items-center gap-6 pt-16">
-              {[...LINKS, { href: "#rsvp", label: "RSVP" }].map((l, i) => (
+              {LINKS.map((l, i) => (
                 <motion.a
                   key={l.href}
                   href={l.href}
