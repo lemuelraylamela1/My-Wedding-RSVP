@@ -8,6 +8,7 @@ import { FloatingLanterns } from "@/components/effects/floating-lanterns";
 import { StarField } from "@/components/effects/star-field";
 import { MagicDust } from "@/components/effects/magic-dust";
 import { LanternReflection } from "@/components/effects/lantern-reflection";
+import { SceneAtmosphere } from "@/components/effects/scene-atmosphere";
 
 type TimeLeft = {
   days: number;
@@ -64,6 +65,7 @@ export function Countdown() {
     >
       <StarField className="absolute inset-0" count={220} parallaxFactor={0.06} />
       <MagicDust count={28} intensity="normal" className="opacity-60" />
+      <SceneAtmosphere tone="night" className="opacity-70" />
 
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="lantern-glow absolute left-1/2 top-1/2 h-[60vh] w-[60vh] -translate-x-1/2 -translate-y-1/2 opacity-50" />

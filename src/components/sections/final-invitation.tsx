@@ -8,6 +8,7 @@ import { GoldButton } from "@/components/ui/gold-button";
 import { GoldShimmer } from "@/components/ui/gold-shimmer";
 import { MagicDust } from "@/components/effects/magic-dust";
 import { LanternReflection } from "@/components/effects/lantern-reflection";
+import { SceneAtmosphere } from "@/components/effects/scene-atmosphere";
 
 export function FinalInvitation() {
   return (
@@ -23,6 +24,7 @@ export function FinalInvitation() {
       <MagicDust count={38} intensity="bright" className="opacity-75" />
       <FloatingLanterns count={28} intensity="festival" />
       <LanternReflection className="opacity-70" />
+      <SceneAtmosphere tone="night" className="opacity-80" />
 
       {/* central warm glow */}
       <div
@@ -38,10 +40,10 @@ export function FinalInvitation() {
 
       <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 44, scale: 0.96, filter: "blur(8px)" }}
+          whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
           viewport={{ once: true }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className="mx-auto mb-8 flex items-center justify-center gap-4">
             <span className="h-px w-14 bg-lantern/50" />

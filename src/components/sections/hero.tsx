@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { wedding, coupleNames } from "@/config/wedding";
 import { StarField } from "@/components/effects/star-field";
@@ -12,9 +12,12 @@ import { GoldButton } from "@/components/ui/gold-button";
 import { MagicDust } from "@/components/effects/magic-dust";
 import { LanternReflection } from "@/components/effects/lantern-reflection";
 import { useMounted } from "@/hooks/use-mounted";
+import { useExperience } from "@/components/experience/experience-provider";
 
 export function Hero() {
   const mounted = useMounted();
+  const { phase } = useExperience();
+  const revealed = phase === "revealed";
   const ref = React.useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -110,6 +113,41 @@ export function Hero() {
         aria-hidden
         className="pointer-events-none absolute inset-x-0 bottom-0 z-[4] h-36 bg-linear-to-t from-night/75 via-night/25 to-transparent"
       />
+
+      <AnimatePresence>
+        {mounted && revealed && (
+          <motion.div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 z-[4]"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.7, ease: [0.16, 1, 0.3, 1], delay: 0.25 }}
+          >
+            <motion.div
+              className="absolute left-1/2 top-[42%] h-[42vh] w-[80vw] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl"
+              style={{
+                background:
+                  "radial-gradient(ellipse, rgba(255,247,210,0.34), rgba(244,196,68,0.16) 42%, rgba(232,130,154,0.1) 62%, transparent 75%)",
+              }}
+              initial={{ scale: 0.74, opacity: 0.9 }}
+              animate={{ scale: 1.28, opacity: 0 }}
+              transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+            />
+            <motion.div
+              className="absolute left-1/2 top-[46%] h-px w-[min(80vw,42rem)] -translate-x-1/2"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent, rgba(255,250,220,0.92), rgba(244,196,68,0.58), transparent)",
+                boxShadow: "0 0 28px rgba(244,196,68,0.5)",
+              }}
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{ scaleX: 1, opacity: [0, 1, 0] }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.12 }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <motion.div
         style={{ y: contentY, opacity: contentOp }}

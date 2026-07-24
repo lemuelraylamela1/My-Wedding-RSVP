@@ -7,6 +7,7 @@ import { wedding } from "@/config/wedding";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Reveal } from "@/components/ui/reveal";
 import { MagicDust } from "@/components/effects/magic-dust";
+import { SceneAtmosphere } from "@/components/effects/scene-atmosphere";
 
 export function OurStory() {
   const lineRef = React.useRef<HTMLDivElement>(null);
@@ -31,6 +32,7 @@ export function OurStory() {
         }}
       />
       <MagicDust count={20} intensity="soft" className="opacity-50" />
+      <SceneAtmosphere tone="warm" className="opacity-60" />
 
       <div className="mx-auto max-w-5xl px-6">
         <SectionHeading
@@ -75,7 +77,7 @@ export function OurStory() {
                         : "md:ml-auto md:pl-16 md:text-left"
                     }`}
                   >
-                    <Reveal index={0}>
+                    <Reveal index={i} variant="float-in">
                       <motion.div
                         whileHover={{ y: -4 }}
                         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}

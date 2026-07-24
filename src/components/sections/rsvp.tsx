@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Check, Loader2, Heart } from "lucide-react";
 import { wedding } from "@/config/wedding";
 import { submitRsvp } from "@/lib/rsvp";
+import { useExperience } from "@/components/experience/experience-provider";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { LuxuryCard } from "@/components/ui/luxury-card";
 import { GoldButton } from "@/components/ui/gold-button";
@@ -41,22 +42,43 @@ const errCls = "mt-1 font-sans text-xs text-rose";
 export function Rsvp() {
   const [done, setDone]             = React.useState(false);
   const [serverError, setServerError] = React.useState<string | null>(null);
+  const { invitationToken, invitationProfile, invitationError } = useExperience();
 
   const {
     register,
     handleSubmit,
+    setValue,
     watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { attending: "yes", guestCount: 1, meal: "" },
+    defaultValues: {
+      name: invitationProfile?.guest.displayName ?? "",
+      email: invitationProfile?.guest.email ?? "",
+      attending: "yes",
+      guestCount: 1,
+      meal: "",
+    },
   });
+
+  React.useEffect(() => {
+    if (!invitationProfile) return;
+    setValue("name", invitationProfile.guest.displayName, { shouldDirty: false });
+    if (invitationProfile.guest.email) {
+      setValue("email", invitationProfile.guest.email, { shouldDirty: false });
+    }
+  }, [invitationProfile]);
 
   const attending = watch("attending");
 
   const onSubmit = handleSubmit(async (values) => {
+    if (!invitationToken) {
+      setServerError("This RSVP form requires a personalized invitation link.");
+      return;
+    }
     setServerError(null);
     const result = await submitRsvp({
+      token: invitationToken,
       name: values.name,
       email: values.email,
       attending: values.attending,
@@ -145,6 +167,7 @@ export function Rsvp() {
                       placeholder="Your name"
                       className={cn(inputCls, "mt-2 border-rose/25 bg-cream/80 shadow-inner focus:border-rose/60 focus:ring-rose/20")}
                       aria-invalid={!!errors.name}
+                      disabled={Boolean(invitationProfile)}
                       {...register("name")}
                     />
                     {errors.name && <p className={errCls}>{errors.name.message}</p>}
@@ -158,6 +181,7 @@ export function Rsvp() {
                       placeholder="you@example.com"
                       className={cn(inputCls, "mt-2 border-rose/25 bg-cream/80 shadow-inner focus:border-rose/60 focus:ring-rose/20")}
                       aria-invalid={!!errors.email}
+                      disabled={Boolean(invitationProfile?.guest.email)}
                       {...register("email")}
                     />
                     {errors.email && <p className={errCls}>{errors.email.message}</p>}
@@ -228,11 +252,23 @@ export function Rsvp() {
                     {errors.message && <p className={errCls}>{errors.message.message}</p>}
                   </div>
 
-                  {serverError && (
-                    <p className="text-center font-sans text-sm text-rose">{serverError}</p>
+                  {(invitationError || serverError) && (
+                    <p className="text-center font-sans text-sm text-rose">
+                      {serverError ?? invitationError}
+                    </p>
+                  )}
+                  {!invitationToken && !invitationError && (
+                    <p className="text-center font-sans text-sm text-ink/60">
+                      Preview mode: open a personalized invitation link to submit RSVP.
+                    </p>
                   )}
 
-                  <GoldButton type="submit" size="lg" disabled={isSubmitting} className="mt-2 w-full">
+                  <GoldButton
+                    type="submit"
+                    size="lg"
+                    disabled={isSubmitting || !invitationToken}
+                    className="mt-2 w-full"
+                  >
                     {isSubmitting ? (
                       <><Loader2 className="h-4 w-4 animate-spin" />Sending...</>
                     ) : (

@@ -1,56 +1,96 @@
-/**
- * RSVP submission abstraction.
- *
- * Currently client-side only: responses are validated, then stored in
- * localStorage and logged. When you build the response-collection backend,
- * replace the body of `submitRsvp` with a fetch to your API/database —
- * this is the ONLY file you need to touch.
- *
- * Example future implementation:
- *
- *   const res = await fetch("/api/rsvp", {
- *     method: "POST",
- *     headers: { "Content-Type": "application/json" },
- *     body: JSON.stringify(data),
- *   });
- *   if (!res.ok) throw new Error("Failed to submit RSVP");
- *   return { ok: true };
- */
-
-export type RsvpPayload = {
+export type RsvpSubmitPayload = {
+  token: string;
   name: string;
   email: string;
   attending: "yes" | "no";
   guestCount: number;
   meal: string;
   message?: string;
-  submittedAt: string;
 };
 
 export type RsvpResult = { ok: true } | { ok: false; error: string };
 
-const STORAGE_KEY = "wedding-rsvp-submissions";
+const plannerApiUrl = (
+  process.env.NEXT_PUBLIC_PLANNER_API_URL ||
+  (process.env.NODE_ENV === "production" ? "" : "http://localhost:3000")
+).replace(/\/+$/, "");
 
-export async function submitRsvp(
-  data: Omit<RsvpPayload, "submittedAt">
-): Promise<RsvpResult> {
-  const payload: RsvpPayload = {
-    ...data,
-    submittedAt: new Date().toISOString(),
+if (typeof window !== "undefined" && process.env.NODE_ENV === "production" && !plannerApiUrl) {
+  console.error("[RSVP] NEXT_PUBLIC_PLANNER_API_URL is not configured.");
+}
+
+export interface InvitationProfile {
+  guest: {
+    displayName: string;
+    email: string | null;
+    plusOneAllowed: boolean;
   };
+  wedding: {
+    title: string;
+    coupleNames: string;
+  };
+  rsvp: {
+    invitationStatus: "NOT_SENT" | "SENT";
+    rsvpStatus: "PENDING" | "ACCEPTED" | "DECLINED" | "TENTATIVE";
+  };
+}
 
-  // Simulate a brief network round-trip for a polished UX.
-  await new Promise((resolve) => setTimeout(resolve, 900));
-
+async function parseError(response: Response, fallback: string) {
   try {
-    if (typeof window !== "undefined") {
-      const existing = window.localStorage.getItem(STORAGE_KEY);
-      const list: RsvpPayload[] = existing ? JSON.parse(existing) : [];
-      list.push(payload);
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    const data = (await response.json()) as { error?: string };
+    return data.error || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+export async function getInvitationProfile(token: string): Promise<{ ok: true; data: InvitationProfile } | { ok: false; error: string }> {
+  if (!token) {
+    return { ok: false, error: "Missing invitation token." };
+  }
+  if (!plannerApiUrl) {
+    return { ok: false, error: "RSVP is not connected to PlanMyDay yet." };
+  }
+  try {
+    const response = await fetch(`${plannerApiUrl}/api/public/rsvp?token=${encodeURIComponent(token)}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      const message = await parseError(response, "This invitation link is invalid or expired.");
+      return { ok: false, error: message };
     }
-    // Visible in the console for now — swap for a real backend later.
-    console.info("[RSVP] received:", payload);
+    const data = (await response.json()) as InvitationProfile;
+    return { ok: true, data };
+  } catch {
+    return { ok: false, error: "Could not load invitation details. Please try again." };
+  }
+}
+
+export async function submitRsvp(payload: RsvpSubmitPayload): Promise<RsvpResult> {
+  if (!plannerApiUrl) {
+    return { ok: false, error: "RSVP is not connected to PlanMyDay yet." };
+  }
+  try {
+    const response = await fetch(`${plannerApiUrl}/api/public/rsvp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        token: payload.token,
+        email: payload.email,
+        attending: payload.attending,
+        guestCount: payload.guestCount,
+        meal: payload.meal,
+        message: payload.message,
+      }),
+    });
+
+    if (!response.ok) {
+      const message = await parseError(response, "We couldn't save your response. Please try again.");
+      return { ok: false, error: message };
+    }
+
     return { ok: true };
   } catch {
     return { ok: false, error: "We couldn't save your response. Please try again." };

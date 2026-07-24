@@ -106,8 +106,7 @@ export function MusicPlayer() {
             whileTap={{ scale: 0.94 }}
             aria-label={muted ? "Unmute music" : "Mute music"}
             aria-pressed={!muted}
-            className="fixed bottom-5 right-5 z-[120] flex h-12 w-12 items-center justify-center rounded-full border border-lantern/55 bg-night/75 text-lantern shadow-[0_0_34px_rgba(244,196,68,0.28)] backdrop-blur-md transition-colors hover:bg-dusk sm:h-14 sm:w-14"
-          >
+            className="fixed bottom-5 right-5 z-[120] flex h-12 w-12 items-center justify-center rounded-full border border-lantern/55 bg-night/75 text-lantern shadow-[0_0_34px_rgba(244,196,68,0.28)] backdrop-blur-md transition-colors hover:bg-dusk sm:h-14 sm:w-14">
             {!muted && (
               <motion.span
                 aria-hidden
@@ -134,10 +133,8 @@ export function MusicPlayer() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0 }}
             transition={{ delay: 1.2, duration: 0.8 }}
-            className="fixed bottom-[4.7rem] right-5 z-[120] hidden items-center gap-1.5 rounded-full border border-lantern/30 bg-night/70 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-lantern-soft backdrop-blur-md sm:flex"
-          >
-            <Music className="h-3 w-3" />
-            Lantern Song
+            className="fixed bottom-[4.7rem] right-5 z-[120] hidden items-center gap-1.5 rounded-full border border-lantern/30 bg-night/70 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-lantern-soft backdrop-blur-md sm:flex">
+            <Music className="h-3 w-3" />I see the light
           </motion.div>
         )}
       </AnimatePresence>

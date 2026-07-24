@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { wedding } from "@/config/wedding";
+import { getInvitationProfile, type InvitationProfile } from "@/lib/rsvp";
 
 export type ExperiencePhase = "invitation" | "opening" | "revealed";
 
@@ -13,6 +14,10 @@ type ExperienceContextValue = {
   reveal: () => void;
   /** Skip the gate entirely (e.g. reduced-motion users who choose to). */
   guestName: string;
+  invitationToken: string | null;
+  invitationProfile: InvitationProfile | null;
+  invitationError: string | null;
+  invitationLoading: boolean;
   reducedMotion: boolean;
   /** True once the guest has opened the invitation (music allowed to play). */
   musicEnabled: boolean;
@@ -26,30 +31,61 @@ const ExperienceContext = React.createContext<ExperienceContextValue | null>(
 
 const MUTE_KEY = "wedding-music-muted";
 
+function defaultGreeting() {
+  return wedding.invitation.greetingDefault.replace("{{guestName}}", "Guest");
+}
+
 export function ExperienceProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const [phase, setPhase] = React.useState<ExperiencePhase>("invitation");
-  const [guestName, setGuestName] = React.useState<string>(
-    wedding.invitation.greetingDefault
-  );
+  // Keep SSR and first client paint identical — URL params are applied after mount.
+  const [guestName, setGuestName] = React.useState<string>(defaultGreeting);
+  const [invitationToken, setInvitationToken] = React.useState<string | null>(null);
+  const [invitationProfile, setInvitationProfile] = React.useState<InvitationProfile | null>(null);
+  // Start loading so SSR and first paint match; resolve after URL/token lookup.
+  const [invitationLoading, setInvitationLoading] = React.useState(true);
+  const [invitationError, setInvitationError] = React.useState<string | null>(null);
   const [reducedMotion, setReducedMotion] = React.useState(false);
   const [musicEnabled, setMusicEnabled] = React.useState(false);
   const [muted, setMuted] = React.useState(false);
 
-  // Guest name from ?guest= URL param.
+  // Read token / guest name from the URL after mount to avoid hydration mismatches.
   React.useEffect(() => {
+    let active = true;
     const id = window.setTimeout(() => {
       const params = new URLSearchParams(window.location.search);
-      const g = params.get("guest");
-      if (g && g.trim()) {
-        const clean = g.trim().slice(0, 60);
-        setGuestName(`Dear ${clean}`);
+      const token = params.get("token")?.trim() ?? "";
+      const previewName = params.get("guest")?.trim() ?? "";
+
+      if (!token) {
+        if (previewName) {
+          setGuestName(`Dear ${previewName.slice(0, 60)}`);
+        }
+        setInvitationLoading(false);
+        return;
       }
+
+      setInvitationToken(token);
+      void getInvitationProfile(token).then((result) => {
+        if (!active) return;
+        if (!result.ok) {
+          setInvitationError(result.error);
+          setInvitationLoading(false);
+          return;
+        }
+        setInvitationProfile(result.data);
+        setGuestName(`Dear ${result.data.guest.displayName}`);
+        setInvitationLoading(false);
+      });
     }, 0);
-    return () => window.clearTimeout(id);
+
+    return () => {
+      active = false;
+      window.clearTimeout(id);
+    };
   }, []);
 
   // Reduced-motion preference (live).
@@ -103,12 +139,29 @@ export function ExperienceProvider({
       open,
       reveal,
       guestName,
+      invitationToken,
+      invitationProfile,
+      invitationError,
+      invitationLoading,
       reducedMotion,
       musicEnabled,
       muted,
       toggleMuted,
     }),
-    [phase, open, reveal, guestName, reducedMotion, musicEnabled, muted, toggleMuted]
+    [
+      phase,
+      open,
+      reveal,
+      guestName,
+      invitationToken,
+      invitationProfile,
+      invitationError,
+      invitationLoading,
+      reducedMotion,
+      musicEnabled,
+      muted,
+      toggleMuted,
+    ]
   );
 
   return (

@@ -12,6 +12,21 @@ import { HillSilhouette } from "@/components/effects/hill-silhouette";
 import { MagicDust } from "@/components/effects/magic-dust";
 import { LanternReflection } from "@/components/effects/lantern-reflection";
 
+const CONSTELLATION_STARS = [
+  { left: 50, top: 6, size: 5 },
+  { left: 36, top: 14, size: 3 },
+  { left: 64, top: 14, size: 3 },
+  { left: 25, top: 31, size: 4 },
+  { left: 75, top: 31, size: 4 },
+  { left: 28, top: 50, size: 3 },
+  { left: 72, top: 50, size: 3 },
+  { left: 40, top: 66, size: 4 },
+  { left: 60, top: 66, size: 4 },
+  { left: 50, top: 82, size: 6 },
+  { left: 50, top: 42, size: 4 },
+  { left: 50, top: 58, size: 3 },
+] as const;
+
 export function OpeningSequence() {
   const { reveal, reducedMotion } = useExperience();
   const root = React.useRef<HTMLDivElement>(null);
@@ -25,87 +40,151 @@ export function OpeningSequence() {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ onComplete: reveal });
 
-      // 0.0s - the night sky wakes up as the click-gated music starts.
+      gsap.set(
+        [
+          ".seq-title-card",
+          ".seq-hero-lantern",
+          ".seq-light-trail",
+          ".seq-lanterns",
+          ".seq-sparkles",
+          ".seq-kingdom",
+          ".seq-reflection",
+          ".seq-flash",
+          ".seq-constellation",
+          ".seq-constellation-line",
+          ".seq-constellation-core",
+        ],
+        { opacity: 0 }
+      );
+      gsap.set(".seq-stage", { scale: 1, filter: "blur(0px)" });
+      gsap.set(".seq-constellation-star", { x: 0, y: 0, scale: 0.4, opacity: 0 });
+
+      // Phase 1: the dream sky opens.
+      tl.add("dreamSky", 0);
       tl.fromTo(
         ".seq-moon-glow",
-        { scale: 0.6, opacity: 0.2 },
-        { scale: 1, opacity: 0.9, duration: 1.8, ease: "power2.out" },
-        0
+        { scale: 0.58, opacity: 0.24 },
+        { scale: 1, opacity: 0.86, duration: 1.35, ease: "power2.out" },
+        "dreamSky"
       );
 
+      // Phase 2: chapter card appears alone.
+      tl.add("chapter", 0.28);
       tl.fromTo(
         ".seq-title-card",
-        { y: 34, opacity: 0, scale: 0.96 },
-        { y: 0, opacity: 1, scale: 1, duration: 1.1, ease: "power3.out" },
-        0.35
+        { y: 32, opacity: 0, scale: 0.96, filter: "blur(5px)" },
+        { y: 0, opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.9, ease: "power3.out" },
+        "chapter"
       );
 
       tl.to(
         ".seq-title-card",
-        { y: -24, opacity: 0, scale: 0.94, duration: 0.8, ease: "power2.in" },
-        1.7
+        { y: -28, opacity: 0, scale: 0.94, filter: "blur(6px)", duration: 0.58, ease: "power2.in" },
+        "chapter+=1.25"
       );
 
-      // A single lantern becomes the first spark of the festival.
+      // Phase 3: stars gather into a constellation before the lantern arrives.
+      tl.add("starsForm", 2.0);
+      tl.to(".seq-constellation", { opacity: 1, duration: 0.2 }, "starsForm");
+      tl.fromTo(
+        ".seq-constellation-star",
+        {
+          x: (index) => (index % 2 === 0 ? -1 : 1) * (90 + index * 8),
+          y: (index) => (index % 3 === 0 ? -1 : 1) * (42 + index * 5),
+          scale: 0.35,
+          opacity: 0,
+        },
+        {
+          x: 0,
+          y: 0,
+          scale: 1,
+          opacity: 1,
+          duration: 0.9,
+          stagger: 0.045,
+          ease: "power3.out",
+        },
+        "starsForm"
+      );
+      tl.to(
+        ".seq-constellation-line",
+        { opacity: 0.58, duration: 0.55, stagger: 0.045, ease: "power2.out" },
+        "starsForm+=0.44"
+      );
+      tl.fromTo(
+        ".seq-constellation-core",
+        { scale: 0.4, opacity: 0 },
+        { scale: 1, opacity: 0.9, duration: 0.58, ease: "back.out(1.7)" },
+        "starsForm+=0.72"
+      );
+      tl.to(
+        ".seq-constellation",
+        { scale: 1.12, opacity: 0, filter: "blur(8px)", duration: 0.72, ease: "power2.in" },
+        "starsForm+=1.45"
+      );
+
+      // Phase 4: lantern rise, after constellation dissolves.
+      tl.add("lanternRise", 3.38);
       tl.fromTo(
         ".seq-hero-lantern",
-        { y: 110, opacity: 0, scale: 0.72, rotate: -7 },
-        { y: -18, opacity: 1, scale: 1, rotate: 0, duration: 1.35, ease: "back.out(1.4)" },
-        1.45
+        { y: 118, opacity: 0, scale: 0.68, rotate: -7 },
+        { y: -20, opacity: 1, scale: 1, rotate: 0, duration: 1.05, ease: "back.out(1.22)" },
+        "lanternRise"
       );
 
       tl.fromTo(
         ".seq-light-trail",
         { scaleX: 0, opacity: 0, transformOrigin: "50% 100%" },
-        { scaleX: 1, opacity: 1, duration: 1, ease: "power2.out" },
-        1.8
+        { scaleX: 1, opacity: 1, duration: 0.82, ease: "power2.out" },
+        "lanternRise+=0.2"
       );
 
-      // The lantern festival opens around the guest.
+      // Phase 5: the world opens.
+      tl.add("worldOpen", 4.12);
       tl.fromTo(
         ".seq-lanterns",
         { opacity: 0 },
-        { opacity: 1, duration: 1.1, ease: "power1.out" },
-        2.25
+        { opacity: 1, duration: 0.72, ease: "power1.out" },
+        "worldOpen"
       );
 
       tl.fromTo(
         ".seq-kingdom",
-        { y: 44, opacity: 0, scale: 1.05 },
-        { y: 0, opacity: 1, scale: 1, duration: 1.35, ease: "power3.out" },
-        2.65
+        { y: 44, opacity: 0, scale: 1.04, filter: "blur(7px)" },
+        { y: 0, opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.1, ease: "power3.out" },
+        "worldOpen+=0.14"
       );
 
       tl.fromTo(
         ".seq-sparkles",
         { opacity: 0 },
-        { opacity: 1, duration: 0.8 },
-        3.15
+        { opacity: 1, duration: 0.58 },
+        "worldOpen+=0.34"
       );
 
       tl.fromTo(
         ".seq-reflection",
-        { opacity: 0, y: 24 },
-        { opacity: 1, y: 0, duration: 0.9, ease: "power2.out" },
-        3.25
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.68, ease: "power2.out" },
+        "worldOpen+=0.46"
       );
 
-      // Camera push toward the kingdom before the Framer exit reveals the hero.
+      // Phase 6: clean camera push and warm reveal.
+      tl.add("pushReveal", 5.24);
       tl.to(
         ".seq-stage",
         {
-          scale: 1.34,
-          filter: "blur(3px)",
-          duration: 1.05,
+          scale: 1.24,
+          filter: "blur(1.5px)",
+          duration: 0.86,
           ease: "power2.in",
         },
-        4.15
+        "pushReveal"
       );
 
       tl.to(
         ".seq-flash",
-        { opacity: 1, duration: 0.65, ease: "power2.inOut" },
-        4.55
+        { opacity: 1, duration: 0.62, ease: "power2.inOut" },
+        "pushReveal+=0.24"
       );
     }, root);
 
@@ -132,11 +211,11 @@ export function OpeningSequence() {
       </div>
 
       <div className="seq-stage relative z-10 h-full w-full will-change-transform">
-        <div className="seq-title-card absolute left-1/2 top-[18%] w-[min(88vw,34rem)] -translate-x-1/2 rounded-[2rem] border border-lantern/40 bg-night/45 px-6 py-7 text-center shadow-[0_0_80px_rgba(244,196,68,0.24)] backdrop-blur-md sm:px-10">
+        <div className="seq-title-card absolute left-1/2 top-[13svh] w-[min(88vw,34rem)] -translate-x-1/2 rounded-[2rem] border border-lantern/40 bg-night/55 px-6 py-6 text-center opacity-0 shadow-[0_0_80px_rgba(244,196,68,0.24)] backdrop-blur-md sm:top-[16svh] sm:px-10 sm:py-7">
           <p className="font-cinzel text-[10px] font-semibold uppercase tracking-[0.42em] text-rose/90">
             {wedding.invitation.eyebrow}
           </p>
-          <p className="mt-4 text-gold-foil font-display text-4xl font-bold sm:text-5xl">
+          <p className="mt-3 text-gold-foil font-display text-3xl font-bold sm:mt-4 sm:text-5xl">
             {coupleNames("&")}
           </p>
           <p className="mt-3 font-serif text-base italic text-lantern-soft">
@@ -144,9 +223,31 @@ export function OpeningSequence() {
           </p>
         </div>
 
-        <div className="seq-hero-lantern absolute left-1/2 top-[43%] z-20 -translate-x-1/2">
-          <div className="relative h-32 w-24 sm:h-40 sm:w-28">
-            <div className="absolute left-1/2 top-1/2 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full bg-lantern/35 blur-2xl" />
+        <div className="seq-constellation pointer-events-none absolute left-1/2 top-[42svh] z-20 h-64 w-64 -translate-x-1/2 -translate-y-1/2 opacity-0 sm:h-80 sm:w-80">
+          <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full overflow-visible">
+            <path className="seq-constellation-line" d="M50 6 L36 14 L25 31 L28 50 L40 66 L50 82 L60 66 L72 50 L75 31 L64 14 Z" fill="none" stroke="rgba(255,223,112,0.65)" strokeWidth="0.7" opacity="0" />
+            <path className="seq-constellation-line" d="M50 6 L64 14 M50 42 L50 58 M40 66 L60 66" fill="none" stroke="rgba(252,232,239,0.55)" strokeWidth="0.5" opacity="0" />
+          </svg>
+          <div className="seq-constellation-core absolute left-1/2 top-[50%] h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0 blur-xl" style={{ background: "radial-gradient(circle, rgba(255,250,220,0.86), rgba(244,196,68,0.35) 42%, transparent 70%)" }} />
+          {CONSTELLATION_STARS.map((star, index) => (
+            <span
+              key={index}
+              className="seq-constellation-star absolute rounded-full opacity-0"
+              style={{
+                left: `${star.left}%`,
+                top: `${star.top}%`,
+                width: `${star.size}px`,
+                height: `${star.size}px`,
+                background: "radial-gradient(circle, #fffaf0, #ffdf70 48%, transparent 72%)",
+                boxShadow: "0 0 16px rgba(255,223,112,0.85)",
+              }}
+            />
+          ))}
+        </div>
+
+        <div className="seq-hero-lantern absolute left-1/2 top-[50svh] z-20 -translate-x-1/2 opacity-0 sm:top-[48svh]">
+          <div className="relative h-28 w-20 sm:h-40 sm:w-28">
+            <div className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-lantern/35 blur-2xl sm:h-44 sm:w-44" />
             <svg viewBox="0 0 100 140" className="relative h-full w-full drop-shadow-[0_0_28px_rgba(244,196,68,0.9)]">
               <path d="M50 8 C24 8 13 25 13 54 C13 82 22 105 35 116 L65 116 C78 105 87 82 87 54 C87 25 76 8 50 8Z" fill="url(#seqLanternBody)" stroke="#ffdf70" strokeOpacity="0.65" />
               <path d="M50 95 C44 104 45 114 50 119 C56 114 56 104 50 95Z" fill="url(#seqLanternFlame)" />
@@ -165,7 +266,7 @@ export function OpeningSequence() {
           </div>
         </div>
 
-        <div className="seq-light-trail absolute left-1/2 top-[52%] h-32 w-[min(80vw,34rem)] -translate-x-1/2 rounded-full opacity-0 blur-xl" style={{ background: "radial-gradient(ellipse, rgba(255,247,200,0.75), rgba(244,196,68,0.28) 45%, transparent 72%)" }} />
+        <div className="seq-light-trail absolute left-1/2 top-[60svh] h-32 w-[min(84vw,38rem)] -translate-x-1/2 rounded-full opacity-0 blur-xl" style={{ background: "radial-gradient(ellipse, rgba(255,247,200,0.78), rgba(244,196,68,0.3) 45%, transparent 72%)" }} />
 
         <div className="seq-kingdom absolute inset-x-0 bottom-0 opacity-0">
           <HillSilhouette className="absolute bottom-0 w-full opacity-75" />

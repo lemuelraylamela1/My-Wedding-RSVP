@@ -8,6 +8,7 @@ import { LuxuryCard } from "@/components/ui/luxury-card";
 import { Reveal } from "@/components/ui/reveal";
 import { GoldButton } from "@/components/ui/gold-button";
 import { MagicDust } from "@/components/effects/magic-dust";
+import { SceneAtmosphere } from "@/components/effects/scene-atmosphere";
 
 const mapsEmbed = `https://www.google.com/maps?q=${encodeURIComponent(
   wedding.event.venue.mapsQuery
@@ -30,6 +31,7 @@ export function EventDetails() {
     >
       <div className="absolute inset-x-0 top-0 h-1" style={{ background: "linear-gradient(90deg, transparent, #f4c444 50%, transparent)" }} />
       <MagicDust count={18} intensity="soft" className="opacity-45" />
+      <SceneAtmosphere tone="rose" className="opacity-50" />
 
       <div className="mx-auto max-w-6xl px-6 pt-6">
         <SectionHeading
@@ -40,7 +42,7 @@ export function EventDetails() {
         />
 
         <div className="mt-16 grid gap-6 md:grid-cols-2">
-          <Reveal index={0}>
+          <Reveal index={0} variant="cinematic-card">
             <LuxuryCard className="storybook-panel h-full" variant="light">
               <DetailIcon icon={<Heart className="h-5 w-5" />} />
               <h3 className="mt-5 font-display text-2xl font-semibold text-ink">{ceremony.label}</h3>
@@ -50,7 +52,7 @@ export function EventDetails() {
             </LuxuryCard>
           </Reveal>
 
-          <Reveal index={1}>
+          <Reveal index={1} variant="cinematic-card">
             <LuxuryCard className="storybook-panel h-full" variant="light">
               <DetailIcon icon={<PartyPopper className="h-5 w-5" />} />
               <h3 className="mt-5 font-display text-2xl font-semibold text-ink">{reception.label}</h3>
@@ -60,7 +62,7 @@ export function EventDetails() {
             </LuxuryCard>
           </Reveal>
 
-          <Reveal index={0}>
+          <Reveal index={2} variant="cinematic-card">
             <LuxuryCard className="storybook-panel h-full" variant="light">
               <DetailIcon icon={<Shirt className="h-5 w-5" />} />
               <h3 className="mt-5 font-display text-2xl font-semibold text-ink">{dressCode.title}</h3>
@@ -85,7 +87,7 @@ export function EventDetails() {
             </LuxuryCard>
           </Reveal>
 
-          <Reveal index={1}>
+          <Reveal index={3} variant="cinematic-card">
             <LuxuryCard className="storybook-panel flex h-full flex-col" variant="light">
               <DetailIcon icon={<MapPin className="h-5 w-5" />} />
               <h3 className="mt-5 font-display text-2xl font-semibold text-ink">{venue.name}</h3>

@@ -7,7 +7,7 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { wedding, coupleNames } from "@/config/wedding";
 import { useExperience } from "./experience-provider";
 import { StarField } from "@/components/effects/star-field";
@@ -19,7 +19,7 @@ import { LanternReflection } from "@/components/effects/lantern-reflection";
 import { useMounted } from "@/hooks/use-mounted";
 
 export function InvitationGate() {
-  const { guestName, open, reducedMotion } = useExperience();
+  const { guestName, invitationLoading, invitationError, open, reducedMotion } = useExperience();
   const mounted = useMounted();
 
   /* 3-D card tilt driven by pointer position */
@@ -166,20 +166,47 @@ export function InvitationGate() {
 
             <div className="mx-auto my-6 gold-rule w-2/3" />
 
-            <p className="font-serif text-[1.05rem] leading-[1.85] text-ink/85">
-              <span className="block font-semibold text-ink">{guestName},</span>
-              <span className="mt-2 block">{wedding.invitation.body}</span>
-            </p>
+            {invitationLoading ? (
+              <div className="flex flex-col items-center py-4" role="status" aria-live="polite">
+                <motion.div
+                  className="flex h-14 w-14 items-center justify-center rounded-full border border-lantern/45 bg-night/90 text-lantern shadow-[0_0_35px_rgba(244,196,68,0.3)]"
+                  animate={
+                    mounted && !reducedMotion
+                      ? { scale: [1, 1.06, 1], opacity: [0.85, 1, 0.85] }
+                      : undefined
+                  }
+                  transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                </motion.div>
+                <p className="mt-5 font-serif text-[1.05rem] text-ink/80">
+                  Preparing your invitation...
+                </p>
+                <p className="mt-2 font-sans text-[10px] uppercase tracking-[0.3em] text-ink/40">
+                  Loading guest details
+                </p>
+              </div>
+            ) : (
+              <>
+                <p className="font-serif text-[1.05rem] leading-[1.85] text-ink/85">
+                  <span className="block font-semibold text-ink">{guestName},</span>
+                  <span className="mt-2 block">{wedding.invitation.body}</span>
+                </p>
+                {invitationError && (
+                  <p className="mt-3 text-xs text-rose">{invitationError}</p>
+                )}
 
-            <div className="mt-9">
-              <GoldButton size="lg" onClick={open}>
-                {wedding.invitation.cta}
-              </GoldButton>
-            </div>
+                <div className="mt-9">
+                  <GoldButton size="lg" onClick={open} disabled={Boolean(invitationError)}>
+                    {wedding.invitation.cta}
+                  </GoldButton>
+                </div>
 
-            <p className="mt-5 font-sans text-[10px] uppercase tracking-[0.3em] text-ink/40">
-              Tap to release the lanterns - music will play
-            </p>
+                <p className="mt-5 font-sans text-[10px] uppercase tracking-[0.3em] text-ink/40">
+                  Tap to release the lanterns - music will play
+                </p>
+              </>
+            )}
           </div>
         </motion.div>
       </motion.div>
